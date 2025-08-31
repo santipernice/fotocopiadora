@@ -20,7 +20,7 @@ const firebaseConfig = {
 const appId = 'fotocopiadora-prod';
 
 // Replace after first login with your UID to unlock owner mode
-const OWNER_USER_ID = 'RcE0PzDt0yM9I06Kpr5vgRfSXNC3';
+const OWNER_USER_ID = 'KbukbFsZTmdz9Os8thHHCu0QEOs2';
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);

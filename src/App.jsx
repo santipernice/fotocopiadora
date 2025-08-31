@@ -99,19 +99,24 @@ const App = () => {
     return () => unsub();
   }, [isAuthReady, userId]);
 
-  // Fetch catalog
-  useEffect(() => {
-    if (!isAuthReady || !userId) return;
-    const colRef = collection(db, 'artifacts', appId, 'users', userId, 'user_catalog_items');
-    const unsub = onSnapshot(colRef, (snapshot) => {
-      const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      setCatalogItems(items);
-    }, (err) => {
-      console.error(err);
-      setMessage(`Error al cargar el catálogo: ${err.message}`);
-    });
-    return () => unsub();
-  }, [isAuthReady, userId]);
+  // Fetch catalog (todos leen el catálogo del dueño)
+useEffect(() => {
+  if (!isAuthReady) return;
+
+  const colRef = collection(
+    db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items'
+  );
+
+  const unsub = onSnapshot(colRef, (snapshot) => {
+    const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    setCatalogItems(items);
+  }, (err) => {
+    console.error(err);
+    setMessage(`Error al cargar el catálogo: ${err.message}`);
+  });
+
+  return () => unsub();
+}, [isAuthReady]);
 
   // Price calculation
   const calculatePrice = useCallback((pages, includeBindingOption, paymentMethodOption, totalPagesInCart) => {
@@ -292,33 +297,49 @@ const App = () => {
   };
 
   const handleAddCatalogItem = async () => {
-    if (!userId) { setMessage("Error: Usuario no autenticado para añadir artículos."); return; }
-    if (!newCatalogItemName || !newCatalogItemPages || parseInt(newCatalogItemPages, 10) <= 0) {
-      setMessage("Ingresá nombre y páginas válidas.");
-      return;
-    }
-    try {
-      const colRef = collection(db, 'artifacts', appId, 'users', userId, 'user_catalog_items');
-      await addDoc(colRef, { name: newCatalogItemName, pageCount: parseInt(newCatalogItemPages, 10) });
-      setNewCatalogItemName(''); setNewCatalogItemPages('');
-      setMessage("Artículo añadido exitosamente.");
-    } catch (e) {
-      console.error(e);
-      setMessage(`Error al añadir artículo: ${e.message}`);
-    }
-  };
+  if (!isOwner) {
+    setMessage("Solo el dueño puede agregar artículos al catálogo.");
+    return;
+  }
+  if (!newCatalogItemName || !newCatalogItemPages || parseInt(newCatalogItemPages, 10) <= 0) {
+    setMessage("Por favor, introduce un nombre y un número de páginas válido.");
+    return;
+  }
+  try {
+    const colRef = collection(
+      db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items'
+    );
+    await addDoc(colRef, {
+      name: newCatalogItemName,
+      pageCount: parseInt(newCatalogItemPages, 10),
+    });
+    setNewCatalogItemName('');
+    setNewCatalogItemPages('');
+    setMessage("Artículo del catálogo añadido exitosamente.");
+  } catch (e) {
+    console.error(e);
+    setMessage(`Error al añadir artículo: ${e.message}`);
+  }
+};
+
 
   const handleDeleteCatalogItem = async (id) => {
-    if (!userId) { setMessage("Error: Usuario no autenticado para eliminar artículos."); return; }
-    try {
-      const ref = doc(db, 'artifacts', appId, 'users', userId, 'user_catalog_items', id);
-      await deleteDoc(ref);
-      setMessage("Artículo eliminado exitosamente.");
-    } catch (e) {
-      console.error(e);
-      setMessage(`Error al eliminar: ${e.message}`);
-    }
-  };
+  if (!isOwner) {
+    setMessage("Solo el dueño puede eliminar artículos del catálogo.");
+    return;
+  }
+  try {
+    const ref = doc(
+      db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items', id
+    );
+    await deleteDoc(ref);
+    setMessage("Artículo del catálogo eliminado exitosamente.");
+  } catch (e) {
+    console.error(e);
+    setMessage(`Error al eliminar artículo: ${e.message}`);
+  }
+};
+
 
   const renderCalculator = () => (
     <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">

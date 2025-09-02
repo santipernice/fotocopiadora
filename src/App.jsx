@@ -20,23 +20,16 @@ const firebaseConfig = {
 const appId = 'fotocopiadora-prod';
 
 // Replace after first login with your UID to unlock owner mode
-// UID del dueño “principal” (donde vive el catálogo)
-const OWNER_USER_ID = 'vqDEjCjRVsaBJY47sj1L34c5TK72';
+// UID principal del dueño (donde vive el catálogo)
+const OWNER_USER_ID = 'aBtAwlW9KQYocGH4JUlH3H4f8Mq2';
 
-// UIDs que pueden entrar en modo dueño (podés ir agregando los que vayas viendo)
-const OWNER_UIDS = [OWNER_USER_ID, 'dOkBSvGMq1eyrorygRQhKplM4ZW2'/* agrega más UIDs acá */];
-
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    setUserId(user.uid);
-    setIsOwner(OWNER_UIDS.includes(user.uid)); // <— cambia esta línea
-    setIsAuthReady(true);
-  } else {
-    await signInAnonymously(auth);
-  }
-});
-
+// Lista de UIDs que pueden entrar en modo dueño
+const OWNER_UIDS = [
+  OWNER_USER_ID,
+  // Si querés más dueños, agregalos acá como strings:
+  // 'otroUID', 
+];
+;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -79,24 +72,25 @@ const App = () => {
     deliveryTimeMessage: 'Los pedidos suelen demorar entre 24 y 48 horas hábiles.',
   });
 
-  // Auth
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setUserId(user.uid);
-        setIsOwner(user.uid === OWNER_USER_ID);
-        setIsAuthReady(true);
-      } else {
-        try {
-          await signInAnonymously(auth);
-        } catch (e) {
-          console.error(e);
-          setIsAuthReady(true);
-        }
+  // Auth (dentro del componente)
+useEffect(() => {
+  const unsub = onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      setUserId(user.uid);
+      setIsOwner(OWNER_UIDS.includes(user.uid)); // 👈 usar includes
+      setIsAuthReady(true);
+    } else {
+      try { 
+        await signInAnonymously(auth); 
+      } catch (e) { 
+        console.error(e); 
+        setIsAuthReady(true); 
       }
-    });
-    return () => unsub();
-  }, []);
+    }
+  });
+  return () => unsub();
+}, []);
+
 
   // Fetch settings
   useEffect(() => {

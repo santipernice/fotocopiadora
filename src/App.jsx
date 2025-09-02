@@ -20,7 +20,23 @@ const firebaseConfig = {
 const appId = 'fotocopiadora-prod';
 
 // Replace after first login with your UID to unlock owner mode
-const OWNER_USER_ID = 'KbukbFsZTmdz9Os8thHHCu0QEOs2';
+// UID del dueño “principal” (donde vive el catálogo)
+const OWNER_USER_ID = 'dOkBSvGMq1eyrorygRQhKplM4ZW2';
+
+// UIDs que pueden entrar en modo dueño (podés ir agregando los que vayas viendo)
+const OWNER_UIDS = [OWNER_USER_ID, /* agrega más UIDs acá */];
+
+...
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    setUserId(user.uid);
+    setIsOwner(OWNER_UIDS.includes(user.uid)); // <— cambia esta línea
+    setIsAuthReady(true);
+  } else {
+    await signInAnonymously(auth);
+  }
+});
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -102,21 +118,14 @@ const App = () => {
   // Fetch catalog (todos leen el catálogo del dueño)
 useEffect(() => {
   if (!isAuthReady) return;
-
-  const colRef = collection(
-    db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items'
-  );
-
-  const unsub = onSnapshot(colRef, (snapshot) => {
-    const items = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  const colRef = collection(db,'artifacts',appId,'users',OWNER_USER_ID,'user_catalog_items');
+  const unsub = onSnapshot(colRef, (snap) => {
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     setCatalogItems(items);
-  }, (err) => {
-    console.error(err);
-    setMessage(`Error al cargar el catálogo: ${err.message}`);
-  });
-
+  }, (err) => setMessage(`Error al cargar el catálogo: ${err.message}`));
   return () => unsub();
 }, [isAuthReady]);
+
 
   // Price calculation
   const calculatePrice = useCallback((pages, includeBindingOption, paymentMethodOption, totalPagesInCart) => {
@@ -268,7 +277,7 @@ useEffect(() => {
       msg += `\n**¡Importante!** Elegiste "Envíos al interior por Andreani". Coordinamos por WhatsApp.\n`;
     }
     msg += `\n¡Gracias por tu compra!`;
-    const url = `https://wa.me/${+5492214776072}?text=${encodeURIComponent(msg)}`;
+    const url = `https://wa.me/${ownerPhoneNumber}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
     setMessage("Pedido finalizado y mensaje de WhatsApp generado.");
     setCartItems([]); setSendToInterior(false); setCustomerName('');

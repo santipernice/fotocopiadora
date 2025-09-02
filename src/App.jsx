@@ -24,9 +24,9 @@ const appId = 'fotocopiadora-prod';
 const OWNER_USER_ID = 'vqDEjCjRVsaBJY47sj1L34c5TK72';
 
 // UIDs que pueden entrar en modo dueño (podés ir agregando los que vayas viendo)
-const OWNER_UIDS = [OWNER_USER_ID, /* agrega más UIDs acá */];
+const OWNER_UIDS = [OWNER_USER_ID, 'dOkBSvGMq1eyrorygRQhKplM4ZW2'/* agrega más UIDs acá */];
 
-...
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     setUserId(user.uid);

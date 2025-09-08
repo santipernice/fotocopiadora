@@ -439,10 +439,17 @@ useEffect(() => {
                 <div className="mb-2 sm:mb-0">
                   <p className="font-semibold text-gray-800">{item.name}</p>
                   <p className="text-sm text-gray-600">{item.pageCount} páginas</p>
-                  <p className="text-lg font-bold text-blue-600">
-                    $ {calculatePrice(item.pageCount, false, 'transferencia', item.pageCount).toFixed(2)}
-                  </p>
-                </div>
+                  <div className="text-sm text-gray-700 mt-2 space-y-1">
+  <p>
+    <span className="font-semibold">Precio transferencia:</span>{' '}
+    ${calculatePrice(item.pageCount, false, 'transferencia', item.pageCount).toFixed(2)}
+  </p>
+  <p>
+    <span className="font-semibold">Precio efectivo:</span>{' '}
+    ${calculatePrice(item.pageCount, false, 'efectivo', item.pageCount).toFixed(2)}
+  </p>
+</div>
+</div>
                 <div className="flex space-x-2">
                   <button onClick={() => handleAddToCart(item)} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm">
                     Añadir al Carrito

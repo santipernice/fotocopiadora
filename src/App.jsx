@@ -205,15 +205,10 @@ useEffect(() => {
       setMessage("Por favor, introduce un número válido de páginas.");
       return;
     }
-    if (!isValidPhone(customerPhone)) {
-  setMessage('Ingresá tu WhatsApp en formato internacional, solo dígitos (ej.: 54911...).');
-  return;
-}
 
     setMessage("Preparando tu pedido...");
     const ownerPhoneNumber = '5492215246895'; // Cambiar por el real
-    let msg = `¡Hola! Me gustaría hacer un pedido de fotocopias.\n`;
-    msg += `WhatsApp del cliente: ${customerPhone}\n`;
+    let msg = `¡Hola! Me gustaría hacer un pedido de fotocopias.\n`;;
     msg += `Páginas: ${numPages}\n`;
     msg += `Archivo a imprimir: ${selectedFile ? selectedFile.name : 'No se subió archivo'}\n`;
     msg += `Anillado: ${includeBinding ? 'Sí' : 'No'}\n`;
@@ -427,23 +422,6 @@ useEffect(() => {
   adjuntá tu archivo en la conversación. No queda almacenado en la web.
 </div>
 
-<div className="mb-4">
-  <label htmlFor="customerPhoneCalc" className="block text-gray-700 text-sm font-bold mb-2">
-    Tu número de WhatsApp (solo dígitos, formato internacional sin “+”)
-  </label>
-  <input
-    id="customerPhoneCalc"
-    type="tel"
-    inputMode="numeric"
-    className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    value={customerPhone}
-    onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, '').slice(0, 15))}
-    placeholder="Ej.: 54911XXXXXXXX"
-  />
-  {!isValidPhone(customerPhone) && customerPhone.length > 0 && (
-    <p className="text-xs text-red-600 mt-1">Verificá que tenga entre 10 y 15 dígitos.</p>
-  )}
-</div>
 
     <button onClick={handleSendCalculatorOrder}
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full mb-3">

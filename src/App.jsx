@@ -196,7 +196,7 @@ useEffect(() => {
       return;
     }
     setMessage("Preparando tu pedido...");
-    const ownerPhoneNumber = '+5492215246895'; // Cambiar por el real
+    const ownerPhoneNumber = '5492215246895'; // Cambiar por el real
     let msg = `¡Hola! Me gustaría hacer un pedido de fotocopias.\n`;
     msg += `Páginas: ${numPages}\n`;
     msg += `Archivo a imprimir: ${selectedFile ? selectedFile.name : 'No se subió archivo'}\n`;
@@ -204,7 +204,7 @@ useEffect(() => {
     msg += `Método de pago para el cálculo: ${paymentMethod}\n`;
     msg += `Precio estimado: $${calculatedPrice.toFixed(2)}\n`;
     msg += `\n*Nota: Por favor, adjunta el archivo por este medio.*`;
-    const url = `https://wa.me/${+5492215246895}?text=${encodeURIComponent(msg)}`;
+    const url = `https://wa.me/${5492215246895}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
     setMessage("Pedido enviado a WhatsApp. Adjuntá el archivo manualmente.");
   };
@@ -258,7 +258,7 @@ useEffect(() => {
   const handleFinalizePurchase = () => {
     if (cartItems.length === 0) { setMessage("Tu carrito está vacío."); return; }
     if (!customerName.trim()) { setMessage("Por favor, ingresa tu nombre para continuar."); return; }
-    const ownerPhoneNumber = '+5491112345678'; // Cambiar por el real
+    const ownerPhoneNumber = '542215246895'; // Cambiar por el real
     let total = 0;
     let msg = `¡Hola! Me gustaría finalizar mi compra de la fotocopiadora.\n`;
     msg += `Nombre del Cliente: ${customerName.trim()}\n\n`;

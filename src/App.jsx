@@ -5,7 +5,7 @@ import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, deleteDoc } 
 
 // PDF.js is used to count pages (loaded via script tag in index.html)
 /* global pdfjsLib */
-
+/* prueba */
 const firebaseConfig = {
     apiKey: "AIzaSyDniek73av9oHTVIdFXqZrxOa-ONiGh0lo",
     authDomain: "todocolor-1c93b.firebaseapp.com",

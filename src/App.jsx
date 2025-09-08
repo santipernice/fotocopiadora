@@ -421,6 +421,11 @@ useEffect(() => {
     <div className="text-lg sm:text-xl font-semibold text-gray-800 mb-6">
       Precio Calculado: <span className="text-blue-600">$ {calculatedPrice.toFixed(2)}</span>
     </div>
+    
+    <div className="mt-2 p-3 rounded-lg border border-amber-200 bg-amber-50 text-amber-800 text-xs sm:text-sm">
+  <strong>Nota:</strong> el PDF se envía mediante el chat de WhatsApp. Cuando se abra WhatsApp,
+  adjuntá tu archivo en la conversación. No queda almacenado en la web.
+</div>
 
 <div className="mb-4">
   <label htmlFor="customerPhoneCalc" className="block text-gray-700 text-sm font-bold mb-2">

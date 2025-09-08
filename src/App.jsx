@@ -191,7 +191,7 @@ useEffect(() => {
       return;
     }
     setMessage("Preparando tu pedido...");
-    const ownerPhoneNumber = '+5491112345678'; // Cambiar por el real
+    const ownerPhoneNumber = '+5492214776072'; // Cambiar por el real
     let msg = `¡Hola! Me gustaría hacer un pedido de fotocopias.\n`;
     msg += `Páginas: ${numPages}\n`;
     msg += `Archivo a imprimir: ${selectedFile ? selectedFile.name : 'No se subió archivo'}\n`;

@@ -60,6 +60,9 @@ const App = () => {
   const [sendToInterior, setSendToInterior] = useState(false);
   const [customerName, setCustomerName] = useState('');
 
+  // NUEVO: método de pago elegido a nivel carrito
+const [cartPaymentMethod, setCartPaymentMethod] = useState('transferencia');
+
   // Settings
   const [settings, setSettings] = useState({
     pricePerPageUnder100: 10,
@@ -137,15 +140,17 @@ useEffect(() => {
     return parseFloat(finalP.toFixed(2));
   }, [settings]);
 
-  // Recalculate cart when length/settings change
-  useEffect(() => {
-    if (cartItems.length === 0) return;
-    const totalPagesInCart = cartItems.reduce((s, it) => s + it.pageCount, 0);
-    setCartItems((prev) => prev.map(it => ({
-      ...it,
-      price: calculatePrice(it.pageCount, it.binding, it.paymentMethod, totalPagesInCart)
-    })));
-  }, [cartItems.length, settings]);
+  // Recalculate cart when items/settings/payment method change
+useEffect(() => {
+  if (cartItems.length === 0) return;
+  const totalPagesInCart = cartItems.reduce((s, it) => s + it.pageCount, 0);
+  setCartItems(prev => prev.map(it => ({
+    ...it,
+    paymentMethod: cartPaymentMethod,
+    price: calculatePrice(it.pageCount, it.binding, cartPaymentMethod, totalPagesInCart),
+  })));
+}, [cartItems.length, settings, cartPaymentMethod]);
+
 
   // Update calculator price
   useEffect(() => {
@@ -207,33 +212,41 @@ useEffect(() => {
   // Add catalog item to cart
   const handleAddToCart = (item) => {
     const totalPagesInCart = cartItems.reduce((s, it) => s + it.pageCount, 0);
-    const price = calculatePrice(item.pageCount, false, 'transferencia', totalPagesInCart + item.pageCount);
-    setCartItems((prev) => [...prev, { ...item, type: 'catalog', price, paymentMethod: 'transferencia', binding: false }]);
+    const price = calculatePrice(item.pageCount, false, cartPaymentMethod, totalPagesInCart + item.pageCount);
+    setCartItems((prev) => [...prev, { ...item, type: 'catalog', price, paymentMethod: cartPaymentMethod, binding: false }]);
     setMessage(`${item.name} añadido al carrito.`);
   };
 
   // Add calculator item
   const handleAddCalculatorToCart = () => {
-    if (!numPages || numPages <= 0) {
-      setMessage("Por favor, introduce un número válido de páginas.");
-      return;
-    }
-    const totalPagesInCart = cartItems.reduce((s, it) => s + it.pageCount, 0);
-    const pages = parseInt(numPages, 10);
-    const price = calculatePrice(pages, includeBinding, paymentMethod, totalPagesInCart + pages);
-    setCartItems((prev) => [...prev, {
+  if (!numPages || numPages <= 0) {
+    setMessage("Por favor, introduce un número válido de páginas.");
+    return;
+  }
+  const totalPagesInCart = cartItems.reduce((s, it) => s + it.pageCount, 0);
+  const pages = parseInt(numPages, 10);
+
+  // usa el método del carrito
+  const price = calculatePrice(pages, includeBinding, cartPaymentMethod, totalPagesInCart + pages);
+
+  setCartItems(prev => [
+    ...prev,
+    {
       type: 'calculator',
       name: `Fotocopias (${pages} páginas${includeBinding ? ', anillado' : ''})`,
       pageCount: pages,
-      price,
       binding: includeBinding,
-      file: selectedFile ? selectedFile.name : 'No file',
-      paymentMethod
-    }]);
-    setMessage(`Item de calculadora (${numPages} páginas) añadido al carrito.`);
-    setNumPages(''); setSelectedFile(null); setCalculatedPrice(0);
-    const fi = document.getElementById('fileUpload'); if (fi) fi.value='';
-  };
+      paymentMethod: cartPaymentMethod,   // <- acá va
+      price                                // <- y el precio ya calculado
+    }
+  ]);
+
+  setMessage(`Item de calculadora (${pages} páginas) añadido al carrito.`);
+  setNumPages('');
+  setCalculatedPrice(0);
+  setIncludeBinding(false);
+};
+
 
   // Remove from cart
   const handleRemoveFromCart = (idx) => {
@@ -249,6 +262,7 @@ useEffect(() => {
     let total = 0;
     let msg = `¡Hola! Me gustaría finalizar mi compra de la fotocopiadora.\n`;
     msg += `Nombre del Cliente: ${customerName.trim()}\n\n`;
+    msg += `Método de pago elegido: ${cartPaymentMethod}\n\n`;
     msg += `Detalle del pedido:\n`;
     cartItems.forEach((it) => {
       total += it.price;
@@ -468,6 +482,26 @@ useEffect(() => {
     return (
       <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
         <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Tu Carrito</h2>
+        <div className="mb-6">
+  <label className="block text-gray-700 text-sm font-bold mb-2">Elegí el método de pago:</label>
+  <div className="flex space-x-4">
+    <label className="inline-flex items-center">
+      <input type="radio" className="form-radio h-4 w-4 text-blue-600"
+             name="cartPaymentMethod" value="efectivo"
+             checked={cartPaymentMethod === 'efectivo'}
+             onChange={() => setCartPaymentMethod('efectivo')} />
+      <span className="ml-2 text-gray-700">Efectivo</span>
+    </label>
+    <label className="inline-flex items-center">
+      <input type="radio" className="form-radio h-4 w-4 text-blue-600"
+             name="cartPaymentMethod" value="transferencia"
+             checked={cartPaymentMethod === 'transferencia'}
+             onChange={() => setCartPaymentMethod('transferencia')} />
+      <span className="ml-2 text-gray-700">Transferencia</span>
+    </label>
+  </div>
+</div>
+
         {cartItems.length === 0 ? (
           <p className="text-gray-600 mb-4">El carrito está vacío.</p>
         ) : (

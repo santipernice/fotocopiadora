@@ -212,8 +212,8 @@ useEffect(() => {
   // Add catalog item to cart
   const handleAddToCart = (item) => {
     const totalPagesInCart = cartItems.reduce((s, it) => s + it.pageCount, 0);
-    const price = calculatePrice(item.pageCount, false, cartPaymentMethod, totalPagesInCart + item.pageCount);
-    setCartItems((prev) => [...prev, { ...item, type: 'catalog', price, paymentMethod: cartPaymentMethod, binding: false }]);
+    const price = calculatePrice(item.pageCount, true, cartPaymentMethod, totalPagesInCart + item.pageCount);
+    setCartItems((prev) => [...prev, { ...item, type: 'catalog', price, paymentMethod: cartPaymentMethod, binding: true }]);
     setMessage(`${item.name} añadido al carrito.`);
   };
 
@@ -451,11 +451,11 @@ useEffect(() => {
                   <div className="text-sm text-gray-700 mt-2 space-y-1">
   <p>
     <span className="font-semibold">Precio transferencia:</span>{' '}
-    ${calculatePrice(item.pageCount, false, 'transferencia', item.pageCount).toFixed(2)}
+    ${calculatePrice(item.pageCount, true, 'transferencia', item.pageCount).toFixed(2)}
   </p>
   <p>
     <span className="font-semibold">Precio efectivo:</span>{' '}
-    ${calculatePrice(item.pageCount, false, 'efectivo', item.pageCount).toFixed(2)}
+    ${calculatePrice(item.pageCount, true, 'efectivo', item.pageCount).toFixed(2)}
   </p>
 </div>
 </div>

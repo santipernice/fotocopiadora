@@ -21,11 +21,11 @@ const appId = 'fotocopiadora-prod';
 
 // Replace after first login with your UID to unlock owner mode
 // UID principal del dueño (donde vive el catálogo)
-const OWNER_USER_ID = '2WNDK6JZFdX70kw2MOPMyHr8fRC2';
+const OWNER_USER_ID = 'P5857AF45Wh9j57UR24uJbRZiTi1';
 
 // Lista de UIDs que pueden entrar en modo dueño
 const OWNER_UIDS = [
-  OWNER_USER_ID, '2WNDK6JZFdX70kw2MOPMyHr8fRC2'
+  OWNER_USER_ID, 'P5857AF45Wh9j57UR24uJbRZiTi1'
   // Si querés más dueños, agregalos acá como strings:
   // 'otroUID', 
 ];

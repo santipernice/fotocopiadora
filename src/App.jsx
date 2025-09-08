@@ -59,6 +59,16 @@ const App = () => {
   const [cartItems, setCartItems] = useState([]);
   const [sendToInterior, setSendToInterior] = useState(false);
   const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState(
+  localStorage.getItem('customerPhone') || ''
+);
+
+useEffect(() => {
+  localStorage.setItem('customerPhone', customerPhone);
+}, [customerPhone]);
+
+const isValidPhone = (p) => /^\d{10,15}$/.test(p);
+
 
   // NUEVO: método de pago elegido a nivel carrito
 const [cartPaymentMethod, setCartPaymentMethod] = useState('transferencia');
@@ -195,9 +205,15 @@ useEffect(() => {
       setMessage("Por favor, introduce un número válido de páginas.");
       return;
     }
+    if (!isValidPhone(customerPhone)) {
+  setMessage('Ingresá tu WhatsApp en formato internacional, solo dígitos (ej.: 54911...).');
+  return;
+}
+
     setMessage("Preparando tu pedido...");
     const ownerPhoneNumber = '5492215246895'; // Cambiar por el real
     let msg = `¡Hola! Me gustaría hacer un pedido de fotocopias.\n`;
+    msg += `WhatsApp del cliente: ${customerPhone}\n`;
     msg += `Páginas: ${numPages}\n`;
     msg += `Archivo a imprimir: ${selectedFile ? selectedFile.name : 'No se subió archivo'}\n`;
     msg += `Anillado: ${includeBinding ? 'Sí' : 'No'}\n`;
@@ -258,10 +274,16 @@ useEffect(() => {
   const handleFinalizePurchase = () => {
     if (cartItems.length === 0) { setMessage("Tu carrito está vacío."); return; }
     if (!customerName.trim()) { setMessage("Por favor, ingresa tu nombre para continuar."); return; }
+  if (!isValidPhone(customerPhone)) {
+  setMessage('Ingresá tu WhatsApp en formato internacional, solo dígitos (ej.: 54911...).');
+  return;
+}
+
     const ownerPhoneNumber = '542215246895'; // Cambiar por el real
     let total = 0;
     let msg = `¡Hola! Me gustaría finalizar mi compra de la fotocopiadora.\n`;
     msg += `Nombre del Cliente: ${customerName.trim()}\n\n`;
+    msg += `WhatsApp del Cliente: ${customerPhone}\n\n`;
     msg += `Método de pago elegido: ${cartPaymentMethod}\n\n`;
     msg += `Detalle del pedido:\n`;
     cartItems.forEach((it) => {
@@ -400,6 +422,24 @@ useEffect(() => {
       Precio Calculado: <span className="text-blue-600">$ {calculatedPrice.toFixed(2)}</span>
     </div>
 
+<div className="mb-4">
+  <label htmlFor="customerPhoneCalc" className="block text-gray-700 text-sm font-bold mb-2">
+    Tu número de WhatsApp (solo dígitos, formato internacional sin “+”)
+  </label>
+  <input
+    id="customerPhoneCalc"
+    type="tel"
+    inputMode="numeric"
+    className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    value={customerPhone}
+    onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, '').slice(0, 15))}
+    placeholder="Ej.: 54911XXXXXXXX"
+  />
+  {!isValidPhone(customerPhone) && customerPhone.length > 0 && (
+    <p className="text-xs text-red-600 mt-1">Verificá que tenga entre 10 y 15 dígitos.</p>
+  )}
+</div>
+
     <button onClick={handleSendCalculatorOrder}
             className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full mb-3">
       Enviar Pedido por WhatsApp
@@ -537,6 +577,25 @@ useEffect(() => {
                  value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Ej. Juan Pérez" />
         </div>
 
+        <div className="mb-4">
+  <label htmlFor="customerPhone" className="block text-gray-700 text-sm font-bold mb-2">
+    Tu número de WhatsApp (solo dígitos, formato internacional sin “+”)
+  </label>
+  <input
+    id="customerPhone"
+    type="tel"
+    inputMode="numeric"
+    className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    value={customerPhone}
+    onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, '').slice(0, 15))}
+    placeholder="Ej.: 54911XXXXXXXX"
+  />
+  {!isValidPhone(customerPhone) && customerPhone.length > 0 && (
+    <p className="text-xs text-red-600 mt-1">Verificá que tenga entre 10 y 15 dígitos.</p>
+  )}
+</div>
+
+
         <div className="mb-6">
           <label className="flex items-center text-gray-700 text-sm font-bold">
             <input type="checkbox" className="form-checkbox h-5 w-5 text-blue-600 rounded"
@@ -552,7 +611,7 @@ useEffect(() => {
 
         <button onClick={handleFinalizePurchase}
                 className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full"
-                disabled={cartItems.length === 0}>
+                disabled={!cartItems.length || !isValidPhone(customerPhone)}>
           Finalizar Compra y Enviar por WhatsApp
         </button>
       </div>

@@ -199,7 +199,7 @@ useEffect(() => {
     msg += `Método de pago para el cálculo: ${paymentMethod}\n`;
     msg += `Precio estimado: $${calculatedPrice.toFixed(2)}\n`;
     msg += `\n*Nota: Por favor, adjunta el archivo por este medio.*`;
-    const url = `https://wa.me/${ownerPhoneNumber}?text=${encodeURIComponent(msg)}`;
+    const url = `https://wa.me/${+5492214776072}?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
     setMessage("Pedido enviado a WhatsApp. Adjuntá el archivo manualmente.");
   };

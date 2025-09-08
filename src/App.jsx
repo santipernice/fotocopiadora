@@ -345,63 +345,58 @@ useEffect(() => {
 
 
   const renderCalculator = () => (
-    <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Calculadora de Copias</h2>
-      <div className="mb-4">
-        <label htmlFor="fileUpload" className="block text-gray-700 text-sm font-bold mb-2">Subir Archivo PDF (Opcional):</label>
-        <input
-          type="file" id="fileUpload"
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-          onChange={handleFileChange} accept="application/pdf"
-        />
-        {selectedFile && <p className="mt-2 text-sm text-gray-600">Archivo seleccionado: {selectedFile.name}</p>}
-      </div>
-      <div className="mb-4">
-        <label htmlFor="numPages" className="block text-gray-700 text-sm font-bold mb-2">Cantidad de Páginas:</label>
-        <input
-          type="number" id="numPages"
-          className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          value={numPages} onChange={(e) => setNumPages(e.target.value)} min="1"
-          disabled={!!selectedFile}
-          placeholder={selectedFile ? "Se calculará automáticamente..." : "Ingresa el número de páginas"}
-        />
-      </div>
-      <div className="mb-4">
-        <label className="flex items-center text-gray-700 text-sm font-bold">
-          <input type="checkbox" className="form-checkbox h-5 w-5 text-blue-600 rounded"
-                 checked={includeBinding} onChange={(e) => setIncludeBinding(e.target.checked)} />
-          <span className="ml-2">Incluir Anillado (opcional)</span>
+  <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
+    <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Calculadora de Copias</h2>
+
+    <div className="mb-4">
+      <label htmlFor="numPages" className="block text-gray-700 text-sm font-bold mb-2">Cantidad de Páginas:</label>
+      <input
+        type="number" id="numPages"
+        className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        value={numPages} onChange={(e) => setNumPages(e.target.value)} min="1"
+        placeholder="Ingresa el número de páginas"
+      />
+    </div>
+
+    <div className="mb-4">
+      <label className="flex items-center text-gray-700 text-sm font-bold">
+        <input type="checkbox" className="form-checkbox h-5 w-5 text-blue-600 rounded"
+               checked={includeBinding} onChange={(e) => setIncludeBinding(e.target.checked)} />
+        <span className="ml-2">Incluir Anillado (opcional)</span>
+      </label>
+    </div>
+
+    <div className="mb-6">
+      <label className="block text-gray-700 text-sm font-bold mb-2">Método de Pago:</label>
+      <div className="flex space-x-4">
+        <label className="inline-flex items-center">
+          <input type="radio" className="form-radio h-4 w-4 text-blue-600" name="paymentMethod" value="efectivo"
+                 checked={paymentMethod === 'efectivo'} onChange={() => setPaymentMethod('efectivo')} />
+          <span className="ml-2 text-gray-700">Efectivo</span>
+        </label>
+        <label className="inline-flex items-center">
+          <input type="radio" className="form-radio h-4 w-4 text-blue-600" name="paymentMethod" value="transferencia"
+                 checked={paymentMethod === 'transferencia'} onChange={() => setPaymentMethod('transferencia')} />
+          <span className="ml-2 text-gray-700">Transferencia</span>
         </label>
       </div>
-      <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-bold mb-2">Método de Pago:</label>
-        <div className="flex space-x-4">
-          <label className="inline-flex items-center">
-            <input type="radio" className="form-radio h-4 w-4 text-blue-600" name="paymentMethod" value="efectivo"
-                   checked={paymentMethod === 'efectivo'} onChange={() => setPaymentMethod('efectivo')} />
-            <span className="ml-2 text-gray-700">Efectivo</span>
-          </label>
-          <label className="inline-flex items-center">
-            <input type="radio" className="form-radio h-4 w-4 text-blue-600" name="paymentMethod" value="transferencia"
-                   checked={paymentMethod === 'transferencia'} onChange={() => setPaymentMethod('transferencia')} />
-            <span className="ml-2 text-gray-700">Transferencia</span>
-          </label>
-        </div>
-      </div>
-      <div className="text-lg sm:text-xl font-semibold text-gray-800 mb-6">
-        Precio Calculado: <span className="text-blue-600">$ {calculatedPrice.toFixed(2)}</span>
-      </div>
-      <button onClick={handleSendCalculatorOrder}
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full mb-3">
-        Enviar Pedido por WhatsApp
-      </button>
-      <button onClick={handleAddCalculatorToCart}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full">
-        Añadir al Carrito
-      </button>
-      <p className="text-xs text-gray-500 mt-2 italic text-center">Nota: Los archivos se adjuntan en el chat de WhatsApp.</p>
     </div>
-  );
+
+    <div className="text-lg sm:text-xl font-semibold text-gray-800 mb-6">
+      Precio Calculado: <span className="text-blue-600">$ {calculatedPrice.toFixed(2)}</span>
+    </div>
+
+    <button onClick={handleSendCalculatorOrder}
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full mb-3">
+      Enviar Pedido por WhatsApp
+    </button>
+    <button onClick={handleAddCalculatorToCart}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full">
+      Añadir al Carrito
+    </button>
+  </div>
+);
+
 
   const renderCatalog = () => (
     <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">

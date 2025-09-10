@@ -50,23 +50,25 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
     isCash
       ? 'from-green-50 to-green-100 border-green-200 text-green-800'
       : 'from-indigo-50 to-indigo-100 border-indigo-200 text-indigo-800';
-  const badge =
-    isCash ? 'bg-green-600' : 'bg-indigo-600';
-
   const icon = isCash ? '💵' : '🏦';
 
   return (
     <div className={`relative border rounded-xl p-2 sm:p-3 bg-gradient-to-br ${wrap} shadow-sm`}>
+      {/* Badge SOLO para efectivo */}
+      {isCash && (
+        <span className="absolute -top-2 -right-2 text-[10px] px-2 py-[2px] rounded-full text-white bg-green-600 shadow ring-1 ring-white/70 z-10">
+          Mejor precio
+        </span>
+      )}
+
       <div className="flex items-center justify-between">
         <div className="text-[11px] font-semibold uppercase tracking-wide opacity-80">
           {icon} {label}
         </div>
-        <span className={`text-[10px] px-1.5 py-0.5 rounded-full text-white ${badge}`}>
-          {isCash ? 'Mejor precio' : 'Transferencia'}
-        </span>
+        {/* ⚠️ Sin badge en transferencia */}
       </div>
+
       <div className="mt-1 sm:mt-1.5">
-        {/* ↓ antes: text-2xl sm:text-3xl */}
         <div className="text-xl sm:text-2xl font-extrabold leading-tight">
           {formatARS(price)}
         </div>
@@ -77,6 +79,7 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
     </div>
   );
 };
+
 
 
 const App = () => {

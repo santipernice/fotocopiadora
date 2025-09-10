@@ -46,10 +46,9 @@ const formatARS = (n) => {
 
 const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
   const isCash = variant === 'cash';
-  const wrap =
-    isCash
-      ? 'from-green-50 to-green-100 border-green-200 text-green-800'
-      : 'from-indigo-50 to-indigo-100 border-indigo-200 text-indigo-800';
+  const wrap = isCash
+    ? 'from-green-50 to-green-100 border-green-200 text-green-800'
+    : 'from-indigo-50 to-indigo-100 border-indigo-200 text-indigo-800';
   const icon = isCash ? '💵' : '🏦';
 
   return (
@@ -61,14 +60,20 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
         </span>
       )}
 
+      {/* Encabezado: icono + texto perfectamente alineados */}
       <div className="flex items-center justify-between">
-        <div className="text-[11px] font-semibold uppercase tracking-wide opacity-80">
-          {icon} {label}
+        <div className="inline-flex items-center gap-1 h-5">
+          <span className="inline-flex items-center justify-center w-4 h-4 leading-none translate-y-[0.5px] select-none">
+            {icon}
+          </span>
+          <span className="text-[11px] font-semibold uppercase tracking-wide leading-none opacity-80">
+            {label}
+          </span>
         </div>
-        {/* ⚠️ Sin badge en transferencia */}
       </div>
 
-      <div className="mt-1 sm:mt-1.5">
+      {/* Precio: misma separación arriba para que alinee con la otra tarjeta */}
+      <div className="mt-2">
         <div className="text-xl sm:text-2xl font-extrabold leading-tight">
           {formatARS(price)}
         </div>
@@ -79,6 +84,7 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
     </div>
   );
 };
+
 
 
 

@@ -613,6 +613,64 @@ const handleDeleteFolder = async (folderId) => {
             </button>
           </div>
 
+          {/* Crear artículo */}
+<div className="mt-4">
+  <h4 className="text-base font-semibold text-gray-700 mb-2">Crear artículo</h4>
+
+  <div className="mb-3">
+    <label className="block text-gray-700 text-sm font-bold mb-1">Nombre del Artículo</label>
+    <input
+      type="text"
+      className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      value={newCatalogItemName}
+      onChange={(e) => setNewCatalogItemName(e.target.value)}
+      placeholder="Ej.: Anatomía I"
+    />
+  </div>
+
+  <div className="mb-3">
+    <label className="block text-gray-700 text-sm font-bold mb-1">Cantidad de Páginas</label>
+    <input
+      type="number"
+      min="1"
+      className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      value={newCatalogItemPages}
+      onChange={(e) => setNewCatalogItemPages(e.target.value)}
+      placeholder="Ej.: 250"
+    />
+  </div>
+
+  <div className="mb-3">
+    <label className="block text-gray-700 text-sm font-bold mb-1">Foto (opcional)</label>
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleNewCatalogImageChange}
+      className="block w-full text-sm text-gray-700"
+    />
+    {newCatalogItemImagePreview && (
+      <img
+        src={newCatalogItemImagePreview}
+        alt="Vista previa"
+        className="mt-2 w-24 h-24 object-cover rounded border"
+      />
+    )}
+    <p className="text-xs text-gray-500 mt-1">
+      Se agregará dentro de: <span className="italic">
+        {breadcrumbs[breadcrumbs.length - 1]?.name}
+      </span>
+    </p>
+  </div>
+
+  <button
+    onClick={handleAddCatalogItem}
+    className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg w-full"
+  >
+    Añadir Artículo al Catálogo
+  </button>
+</div>
+
+
           {/* Crear artículo (tu formulario actual) */}
           {/* ...tu formulario de crear artículo existente... */}
         </div>

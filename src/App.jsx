@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, deleteDoc } from 'firebase/firestore';
@@ -58,6 +58,23 @@ const App = () => {
   const [newCatalogItemPages, setNewCatalogItemPages] = useState('');
   const [newCatalogItemImage, setNewCatalogItemImage] = useState(null);
   const [newCatalogItemImagePreview, setNewCatalogItemImagePreview] = useState(null);
+  // 🔎 Búsqueda en catálogo
+  const [catalogSearch, setCatalogSearch] = useState('');
+
+// Normaliza texto para que la búsqueda ignore mayúsculas/acentos
+  const norm = (s) =>
+  (s ?? '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+// Lista filtrada según la búsqueda
+  const filteredCatalogItems = React.useMemo(() => {
+  const q = norm(catalogSearch.trim());
+  if (!q) return catalogItems;
+  return catalogItems.filter(it =>
+    norm(it.name).includes(q) ||
+    String(it.pageCount ?? '').includes(catalogSearch.trim())
+  );
+}, [catalogItems, catalogSearch]);
+
 
   // Cart
   const [cartItems, setCartItems] = useState([]);
@@ -517,76 +534,109 @@ const handleNewCatalogImageChange = (e) => {
 
       <div>
         <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-700">Artículos Disponibles</h3>
-        {catalogItems.length === 0 ? (
-          <p className="text-gray-600">No hay artículos en el catálogo.</p>
-        ) : (
-          <ul className="space-y-4">
-            {catalogItems.map(item => (
-              <li key={item.id} className="p-4 border rounded-lg bg-gray-50">
-  <div className="flex items-start sm:items-center gap-4 justify-between">
-    {/* Izquierda: imagen + datos */}
-    <div className="flex items-start gap-4">
-      <img
-        src={item.imageUrl || 'https://via.placeholder.com/96?text=Sin+foto'}
-        alt={item.name}
-        className="w-24 h-24 object-cover rounded border"
-      />
-      <div>
-        <p className="font-semibold text-gray-800">{item.name}</p>
-        <p className="text-sm text-gray-600">{item.pageCount} páginas</p>
-        <div className="text-sm text-gray-700 mt-2 space-y-1">
-          <p>
-            <span className="font-semibold">Precio transferencia:</span>{' '}
-            ${calculatePrice(item.pageCount, true, 'transferencia', item.pageCount).toFixed(2)}
-          </p>
-          <p>
-            <span className="font-semibold">Precio efectivo:</span>{' '}
-            ${calculatePrice(item.pageCount, true, 'efectivo', item.pageCount).toFixed(2)}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    {/* Derecha: acciones */}
-    <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+        {/* Barra de búsqueda */}
+<div className="mb-4">
+  <label htmlFor="catalogSearch" className="block text-gray-700 text-sm font-bold mb-2">
+    Buscar en el catálogo
+  </label>
+  <input
+    id="catalogSearch"
+    type="text"
+    className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    placeholder="Ej.: Anatomía, 200 páginas…"
+    value={catalogSearch}
+    onChange={(e) => setCatalogSearch(e.target.value)}
+  />
+  <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
+    <span>
+      {catalogSearch ? `Mostrando ${filteredCatalogItems.length} resultado(s)` : `Total: ${catalogItems.length}`}
+    </span>
+    {catalogSearch && (
       <button
-        onClick={() => handleAddToCart(item)}
-        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm"
+        type="button"
+        onClick={() => setCatalogSearch('')}
+        className="underline hover:text-gray-700"
       >
-        Añadir al Carrito
+        Limpiar búsqueda
       </button>
-
-      {isOwner && (
-        <>
-          <button
-            onClick={() => handleDeleteCatalogItem(item.id)}
-            className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm"
-          >
-            Eliminar
-          </button>
-
-          {/* (Opcional) cambiar foto de un artículo existente */}
-          <label className="text-xs text-gray-700 cursor-pointer bg-gray-200 hover:bg-gray-300 py-2 px-3 rounded-lg">
-            Cambiar foto
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) handleUpdateCatalogItemImage(item.id, f);
-              }}
-            />
-          </label>
-        </>
-      )}
-    </div>
+    )}
   </div>
-</li>
+</div>
 
-            ))}
-          </ul>
-        )}
+        {filteredCatalogItems.length === 0 ? (
+  <p className="text-gray-600">
+    {catalogItems.length === 0
+      ? 'No hay artículos en el catálogo.'
+      : 'No se encontraron artículos que coincidan con la búsqueda.'}
+  </p>
+) : (
+  <ul className="space-y-4">
+    {filteredCatalogItems.map(item => (
+      <li key={item.id} className="p-4 border rounded-lg bg-gray-50">
+        <div className="flex items-start sm:items-center gap-4 justify-between">
+          {/* Izquierda: imagen + datos */}
+          <div className="flex items-start gap-4">
+            <img
+              src={item.imageUrl || 'https://via.placeholder.com/96?text=Sin+foto'}
+              alt={item.name}
+              className="w-24 h-24 object-cover rounded border"
+            />
+            <div>
+              <p className="font-semibold text-gray-800">{item.name}</p>
+              <p className="text-sm text-gray-600">{item.pageCount} páginas</p>
+              <div className="text-sm text-gray-700 mt-2 space-y-1">
+                <p>
+                  <span className="font-semibold">Precio transferencia:</span>{' '}
+                  ${calculatePrice(item.pageCount, true, 'transferencia', item.pageCount).toFixed(2)}
+                </p>
+                <p>
+                  <span className="font-semibold">Precio efectivo:</span>{' '}
+                  ${calculatePrice(item.pageCount, true, 'efectivo', item.pageCount).toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Derecha: acciones */}
+          <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+            <button
+              onClick={() => handleAddToCart(item)}
+              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm"
+            >
+              Añadir al Carrito
+            </button>
+
+            {isOwner && (
+              <>
+                <button
+                  onClick={() => handleDeleteCatalogItem(item.id)}
+                  className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm"
+                >
+                  Eliminar
+                </button>
+
+                {/* (Opcional) cambiar foto de un artículo existente */}
+                <label className="text-xs text-gray-700 cursor-pointer bg-gray-200 hover:bg-gray-300 py-2 px-3 rounded-lg">
+                  Cambiar foto
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleUpdateCatalogItemImage(item.id, f);
+                    }}
+                  />
+                </label>
+              </>
+            )}
+          </div>
+        </div>
+      </li>
+    ))}
+  </ul>
+)}
+
       </div>
     </div>
   );

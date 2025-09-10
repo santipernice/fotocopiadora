@@ -86,8 +86,6 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
 };
 
 
-
-
 const App = () => {
   const [userId, setUserId] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -196,22 +194,38 @@ useEffect(() => {
 }, []);
 
 
-  // Fetch settings
-  useEffect(() => {
-    if (!isAuthReady || !userId) return;
-    const settingsDocRef = doc(db, 'artifacts', appId, 'users', userId, 'user_settings', 'general');
-    const unsub = onSnapshot(settingsDocRef, (snap) => {
+  // Fetch settings (TODOS leen el doc del DUEÑO)
+useEffect(() => {
+  if (!isAuthReady) return;
+
+  const settingsDocRef = doc(
+    db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_settings', 'general'
+  );
+
+  const unsub = onSnapshot(
+    settingsDocRef,
+    (snap) => {
       if (snap.exists()) {
         setSettings((prev) => ({ ...prev, ...snap.data() }));
+      } else if (isOwner) {
+        // Solo el dueño crea los defaults si aún no existe
+        setDoc(settingsDocRef, settings).catch((e) =>
+          console.error("Default settings error:", e)
+        );
       } else {
-        setDoc(settingsDocRef, settings).catch((e) => console.error("Default settings error:", e));
+        // Visitante sin doc: NO crear nada acá
+        // (se queda con los defaults locales hasta que el dueño guarde)
       }
-    }, (err) => {
+    },
+    (err) => {
       console.error(err);
       setMessage(`Error al cargar la configuración: ${err.message}`);
-    });
-    return () => unsub();
-  }, [isAuthReady, userId]);
+    }
+  );
+
+  return () => unsub();
+}, [isAuthReady, isOwner]);
+
 
   // Fetch catalog (todos leen el catálogo del dueño)
 useEffect(() => {
@@ -411,25 +425,31 @@ useEffect(() => {
 
   // Owner save settings
   const handleSaveSettings = async () => {
-    if (!userId) { setMessage("Error: Usuario no autenticado para guardar."); return; }
-    try {
-      const ref = doc(db, 'artifacts', appId, 'users', userId, 'user_settings', 'general');
-      await setDoc(ref, {
-        pricePerPageUnder100: parseFloat(settings.pricePerPageUnder100),
-        pricePerPageOver100: parseFloat(settings.pricePerPageOver100),
-        bindingPriceUnder100: parseFloat(settings.bindingPriceUnder100),
-        bindingPriceOver100: parseFloat(settings.bindingPriceOver100),
-        maxPagesPerBinding: parseInt(settings.maxPagesPerBinding, 10),
-        cashDiscountPercentage: parseFloat(settings.cashDiscountPercentage),
-        transferSurchargePercentage: parseFloat(settings.transferSurchargePercentage),
-        deliveryTimeMessage: settings.deliveryTimeMessage,
-      });
-      setMessage("Configuración guardada exitosamente.");
-    } catch (e) {
-      console.error(e);
-      setMessage(`Error al guardar la configuración: ${e.message}`);
-    }
-  };
+  if (!isOwner) {
+    setMessage("Solo el dueño puede guardar la configuración.");
+    return;
+  }
+  try {
+    const ref = doc(
+      db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_settings', 'general'
+    );
+    await setDoc(ref, {
+      pricePerPageUnder100: parseFloat(settings.pricePerPageUnder100),
+      pricePerPageOver100: parseFloat(settings.pricePerPageOver100),
+      bindingPriceUnder100: parseFloat(settings.bindingPriceUnder100),
+      bindingPriceOver100: parseFloat(settings.bindingPriceOver100),
+      maxPagesPerBinding: parseInt(settings.maxPagesPerBinding, 10),
+      cashDiscountPercentage: parseFloat(settings.cashDiscountPercentage),
+      transferSurchargePercentage: parseFloat(settings.transferSurchargePercentage),
+      deliveryTimeMessage: settings.deliveryTimeMessage,
+    }, { merge: true });
+    setMessage("Configuración guardada exitosamente.");
+  } catch (e) {
+    console.error(e);
+    setMessage(`Error al guardar la configuración: ${e.message}`);
+  }
+};
+
 
 const handleNewCatalogImageChange = (e) => {
   const file = e.target.files?.[0] || null;

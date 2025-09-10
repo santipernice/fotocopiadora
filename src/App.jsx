@@ -56,22 +56,28 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
   const icon = isCash ? '💵' : '🏦';
 
   return (
-    <div className={`relative border rounded-2xl p-3 sm:p-4 bg-gradient-to-br ${wrap} shadow-sm`}>
+    <div className={`relative border rounded-xl p-2 sm:p-3 bg-gradient-to-br ${wrap} shadow-sm`}>
       <div className="flex items-center justify-between">
-        <div className="text-xs font-semibold uppercase tracking-wide opacity-80">
+        <div className="text-[11px] font-semibold uppercase tracking-wide opacity-80">
           {icon} {label}
         </div>
-        <span className={`text-[10px] px-2 py-0.5 rounded-full text-white ${badge}`}>
+        <span className={`text-[10px] px-1.5 py-0.5 rounded-full text-white ${badge}`}>
           {isCash ? 'Mejor precio' : 'Transferencia'}
         </span>
       </div>
-      <div className="mt-1 sm:mt-2">
-        <div className="text-2xl sm:text-3xl font-extrabold leading-none">{formatARS(price)}</div>
-        {sublabel && <div className="text-[11px] mt-1 opacity-80">{sublabel}</div>}
+      <div className="mt-1 sm:mt-1.5">
+        {/* ↓ antes: text-2xl sm:text-3xl */}
+        <div className="text-xl sm:text-2xl font-extrabold leading-tight">
+          {formatARS(price)}
+        </div>
+        {sublabel && (
+          <div className="text-[11px] mt-1 opacity-80 leading-snug">{sublabel}</div>
+        )}
       </div>
     </div>
   );
 };
+
 
 const App = () => {
   const [userId, setUserId] = useState(null);
@@ -801,7 +807,7 @@ const handleDeleteFolder = async (folderId) => {
   const savings = Math.max(0, priceTransfer - priceCash);
 
   return (
-    <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
       <PricePill
         label="Efectivo"
         price={priceCash}

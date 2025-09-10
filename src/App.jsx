@@ -38,6 +38,41 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
+// —— Helpers de precio llamativo ——
+const formatARS = (n) => {
+  if (typeof n !== 'number' || isNaN(n)) return '$0';
+  return n.toLocaleString('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
+};
+
+const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
+  const isCash = variant === 'cash';
+  const wrap =
+    isCash
+      ? 'from-green-50 to-green-100 border-green-200 text-green-800'
+      : 'from-indigo-50 to-indigo-100 border-indigo-200 text-indigo-800';
+  const badge =
+    isCash ? 'bg-green-600' : 'bg-indigo-600';
+
+  const icon = isCash ? '💵' : '🏦';
+
+  return (
+    <div className={`relative border rounded-2xl p-3 sm:p-4 bg-gradient-to-br ${wrap} shadow-sm`}>
+      <div className="flex items-center justify-between">
+        <div className="text-xs font-semibold uppercase tracking-wide opacity-80">
+          {icon} {label}
+        </div>
+        <span className={`text-[10px] px-2 py-0.5 rounded-full text-white ${badge}`}>
+          {isCash ? 'Mejor precio' : 'Transferencia'}
+        </span>
+      </div>
+      <div className="mt-1 sm:mt-2">
+        <div className="text-2xl sm:text-3xl font-extrabold leading-none">{formatARS(price)}</div>
+        {sublabel && <div className="text-[11px] mt-1 opacity-80">{sublabel}</div>}
+      </div>
+    </div>
+  );
+};
+
 const App = () => {
   const [userId, setUserId] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -759,16 +794,30 @@ const handleDeleteFolder = async (folderId) => {
                     <div>
                       <p className="font-semibold text-gray-800">{item.name}</p>
                       <p className="text-sm text-gray-600">{item.pageCount} páginas</p>
-                      <div className="text-sm text-gray-700 mt-2 space-y-1">
-                        <p>
-                          <span className="font-semibold">Precio transferencia:</span>{' '}
-                          ${calculatePrice(item.pageCount, true, 'transferencia', item.pageCount).toFixed(2)}
-                        </p>
-                        <p>
-                          <span className="font-semibold">Precio efectivo:</span>{' '}
-                          ${calculatePrice(item.pageCount, true, 'efectivo', item.pageCount).toFixed(2)}
-                        </p>
-                      </div>
+                      {/* PRECIOS LLAMATIVOS */}
+{(() => {
+  const priceCash = calculatePrice(item.pageCount, true, 'efectivo', item.pageCount);
+  const priceTransfer = calculatePrice(item.pageCount, true, 'transferencia', item.pageCount);
+  const savings = Math.max(0, priceTransfer - priceCash);
+
+  return (
+    <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <PricePill
+        label="Efectivo"
+        price={priceCash}
+        variant="cash"
+        sublabel={savings > 0 ? `Ahorra ${formatARS(savings)} pagando en efectivo` : 'Incluye anillado si corresponde'}
+      />
+      <PricePill
+        label="Transferencia"
+        price={priceTransfer}
+        variant="transfer"
+        sublabel="Puede incluir recargo según configuración"
+      />
+    </div>
+  );
+})()}
+
                     </div>
                   </div>
 

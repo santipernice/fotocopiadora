@@ -61,6 +61,26 @@ const App = () => {
   // 🔎 Búsqueda en catálogo
   const [catalogSearch, setCatalogSearch] = useState('');
 
+  // --- Carpetas del catálogo ---
+const ROOT = null; // representa la raíz
+const [folders, setFolders] = useState([]);
+const [currentFolderId, setCurrentFolderId] = useState(ROOT);
+const [newFolderName, setNewFolderName] = useState('');
+
+// Breadcrumb calculado
+const breadcrumbs = useMemo(() => {
+  const map = new Map(folders.map(f => [f.id, f]));
+  const trail = [];
+  let id = currentFolderId;
+  while (id) {
+    const f = map.get(id);
+    if (!f) break;
+    trail.unshift({ id: f.id, name: f.name, parentId: f.parentId ?? null });
+    id = f.parentId ?? null;
+  }
+  return [{ id: ROOT, name: 'Catálogo' }, ...trail];
+}, [folders, currentFolderId]);
+
 // Normaliza texto para que la búsqueda ignore mayúsculas/acentos
   const norm = (s) =>
   (s ?? '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -154,6 +174,16 @@ useEffect(() => {
   return () => unsub();
 }, [isAuthReady]);
 
+// Fetch folders (todos leen las carpetas del dueño)
+useEffect(() => {
+  if (!isAuthReady) return;
+  const colRef = collection(db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_folders');
+  const unsub = onSnapshot(colRef, (snap) => {
+    const fs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    setFolders(fs);
+  }, (err) => setMessage(`Error al cargar carpetas: ${err.message}`));
+  return () => unsub();
+}, [isAuthReady]);
 
   // Price calculation
   const calculatePrice = useCallback((pages, includeBindingOption, paymentMethodOption, totalPagesInCart) => {
@@ -357,6 +387,41 @@ const handleNewCatalogImageChange = (e) => {
   setNewCatalogItemImagePreview(file ? URL.createObjectURL(file) : null);
 };
 
+const handleAddFolder = async () => {
+  if (!isOwner) { setMessage("Solo el dueño puede crear carpetas."); return; }
+  const name = newFolderName.trim();
+  if (!name) { setMessage("Poné un nombre para la carpeta."); return; }
+  try {
+    const colRef = collection(db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_folders');
+    await addDoc(colRef, { name, parentId: currentFolderId ?? null });
+    setNewFolderName('');
+    setMessage("Carpeta creada.");
+  } catch (e) {
+    console.error(e);
+    setMessage(`Error al crear carpeta: ${e.message}`);
+  }
+};
+
+const handleDeleteFolder = async (folderId) => {
+  if (!isOwner) { setMessage("Solo el dueño puede eliminar carpetas."); return; }
+  const hasSubfolders = folders.some(f => (f.parentId ?? null) === folderId);
+  const hasItems = catalogItems.some(it => (it.folderId ?? null) === folderId);
+  if (hasSubfolders || hasItems) { setMessage("No podés borrar una carpeta que contiene subcarpetas o artículos."); return; }
+
+  try {
+    const ref_ = doc(db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_folders', folderId);
+    await deleteDoc(ref_);
+    if (currentFolderId === folderId) {
+      const parent = folders.find(f => f.id === folderId)?.parentId ?? null;
+      setCurrentFolderId(parent ?? null);
+    }
+    setMessage("Carpeta eliminada.");
+  } catch (e) {
+    console.error(e);
+    setMessage(`Error al eliminar carpeta: ${e.message}`);
+  }
+};
+
   const handleAddCatalogItem = async () => {
   if (!isOwner) {
     setMessage("Solo el dueño puede agregar artículos al catálogo.");
@@ -375,7 +440,8 @@ const handleNewCatalogImageChange = (e) => {
     const docRef = await addDoc(colRef, {
       name: newCatalogItemName,
       pageCount: parseInt(newCatalogItemPages, 10),
-      imageUrl: '' // lo completamos si hay foto
+      imageUrl: '', // lo completamos si hay foto
+      folderId: currentFolderId ?? null
     });
 
     // 2) Si el dueño seleccionó imagen, la subimos a Storage y guardamos el URL
@@ -488,158 +554,208 @@ const handleNewCatalogImageChange = (e) => {
 );
 
 
-  const renderCatalog = () => (
+  const renderCatalog = () => {
+  // Carpetas hijas de la carpeta actual
+  const childFolders = folders.filter(f => (f.parentId ?? null) === (currentFolderId ?? null));
+
+  // Ítems en la carpeta actual (si NO hay búsqueda)
+  const itemsInCurrentFolder = catalogItems.filter(it => ((it.folderId ?? null) === (currentFolderId ?? null)));
+
+  // Si hay búsqueda, mostramos resultados globales; si no, los de la carpeta actual
+  const itemsToShow = catalogSearch.trim() ? filteredCatalogItems : itemsInCurrentFolder;
+
+  return (
     <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
       <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Catálogo de Artículos</h2>
+
+      {/* Breadcrumb */}
+      <nav className="text-sm text-gray-600 mb-4 flex flex-wrap items-center gap-1">
+        {breadcrumbs.map((b, idx) => (
+          <span key={b.id ?? 'root'} className="flex items-center">
+            {idx > 0 && <span className="mx-1">/</span>}
+            <button
+              onClick={() => setCurrentFolderId(b.id ?? null)}
+              className={`hover:underline ${idx === breadcrumbs.length - 1 ? 'font-semibold text-gray-800' : 'text-blue-600'}`}
+            >
+              {b.name}
+            </button>
+          </span>
+        ))}
+      </nav>
+
+      {/* Panel del dueño */}
       {isOwner && (
         <div className="mb-6 border-b pb-4 border-gray-200">
-          <h3 className="text-lg sm:text-xl font-semibold mb-3 text-gray-700">Administrar Artículos (Dueño)</h3>
-          <div className="mb-4">
-            <label htmlFor="newItemName" className="block text-gray-700 text-sm font-bold mb-2">Nombre del Artículo:</label>
-            <input type="text" id="newItemName"
-                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   value={newCatalogItemName} onChange={(e) => setNewCatalogItemName(e.target.value)} />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="newItemPages" className="block text-gray-700 text-sm font-bold mb-2">Cantidad de Páginas:</label>
-            <input type="number" id="newItemPages"
-                   className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                   value={newCatalogItemPages} onChange={(e) => setNewCatalogItemPages(e.target.value)} min="1" />
-          </div>
-          <div className="mb-4">
-  <label className="block text-gray-700 text-sm font-bold mb-2">
-    Foto (opcional):
-  </label>
-  <input
-    type="file"
-    accept="image/*"
-    onChange={handleNewCatalogImageChange}
-    className="block w-full text-sm text-gray-700"
-  />
-  {newCatalogItemImagePreview && (
-    <img
-      src={newCatalogItemImagePreview}
-      alt="Vista previa"
-      className="mt-2 w-24 h-24 object-cover rounded"
-    />
-  )}
-</div>
+          <h3 className="text-lg sm:text-xl font-semibold mb-3 text-gray-700">Administrar (Dueño)</h3>
 
-          <button onClick={handleAddCatalogItem}
-                  className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full">
-            Añadir Artículo al Catálogo
-          </button>
+          {/* Crear carpeta */}
+          <div className="mb-4 flex gap-2 items-end">
+            <div className="flex-1">
+              <label className="block text-gray-700 text-sm font-bold mb-2">Nueva carpeta en esta ubicación:</label>
+              <input
+                type="text"
+                className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="Ej.: Medicina"
+                value={newFolderName}
+                onChange={(e) => setNewFolderName(e.target.value)}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Se creará dentro de: <span className="italic">
+                  {breadcrumbs[breadcrumbs.length - 1]?.name}
+                </span>
+              </p>
+            </div>
+            <button
+              onClick={handleAddFolder}
+              className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg"
+            >
+              Crear carpeta
+            </button>
+          </div>
+
+          {/* Crear artículo (tu formulario actual) */}
+          {/* ...tu formulario de crear artículo existente... */}
         </div>
       )}
 
-      <div>
-        <h3 className="text-lg sm:text-xl font-semibold mb-4 text-gray-700">Artículos Disponibles</h3>
-        {/* Barra de búsqueda */}
-<div className="mb-4">
-  <label htmlFor="catalogSearch" className="block text-gray-700 text-sm font-bold mb-2">
-    Buscar en el catálogo
-  </label>
-  <input
-    id="catalogSearch"
-    type="text"
-    className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-    placeholder="Ej.: Anatomía, 200 páginas…"
-    value={catalogSearch}
-    onChange={(e) => setCatalogSearch(e.target.value)}
-  />
-  <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-    <span>
-      {catalogSearch ? `Mostrando ${filteredCatalogItems.length} resultado(s)` : `Total: ${catalogItems.length}`}
-    </span>
-    {catalogSearch && (
-      <button
-        type="button"
-        onClick={() => setCatalogSearch('')}
-        className="underline hover:text-gray-700"
-      >
-        Limpiar búsqueda
-      </button>
-    )}
-  </div>
-</div>
-
-        {filteredCatalogItems.length === 0 ? (
-  <p className="text-gray-600">
-    {catalogItems.length === 0
-      ? 'No hay artículos en el catálogo.'
-      : 'No se encontraron artículos que coincidan con la búsqueda.'}
-  </p>
-) : (
-  <ul className="space-y-4">
-    {filteredCatalogItems.map(item => (
-      <li key={item.id} className="p-4 border rounded-lg bg-gray-50">
-        <div className="flex items-start sm:items-center gap-4 justify-between">
-          {/* Izquierda: imagen + datos */}
-          <div className="flex items-start gap-4">
-            <img
-              src={item.imageUrl || 'https://via.placeholder.com/96?text=Sin+foto'}
-              alt={item.name}
-              className="w-24 h-24 object-cover rounded border"
-            />
-            <div>
-              <p className="font-semibold text-gray-800">{item.name}</p>
-              <p className="text-sm text-gray-600">{item.pageCount} páginas</p>
-              <div className="text-sm text-gray-700 mt-2 space-y-1">
-                <p>
-                  <span className="font-semibold">Precio transferencia:</span>{' '}
-                  ${calculatePrice(item.pageCount, true, 'transferencia', item.pageCount).toFixed(2)}
-                </p>
-                <p>
-                  <span className="font-semibold">Precio efectivo:</span>{' '}
-                  ${calculatePrice(item.pageCount, true, 'efectivo', item.pageCount).toFixed(2)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Derecha: acciones */}
-          <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
-            <button
-              onClick={() => handleAddToCart(item)}
-              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm"
-            >
-              Añadir al Carrito
+      {/* Búsqueda */}
+      <div className="mb-4">
+        <label htmlFor="catalogSearch" className="block text-gray-700 text-sm font-bold mb-2">
+          Buscar en el catálogo
+        </label>
+        <input
+          id="catalogSearch"
+          type="text"
+          className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          placeholder="Ej.: Anatomía, 200 páginas…"
+          value={catalogSearch}
+          onChange={(e) => setCatalogSearch(e.target.value)}
+        />
+        <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
+          <span>
+            {catalogSearch
+              ? `Mostrando ${filteredCatalogItems.length} resultado(s) en todas las carpetas`
+              : `Carpetas: ${childFolders.length} · Artículos aquí: ${itemsInCurrentFolder.length}`}
+          </span>
+          {catalogSearch && (
+            <button type="button" onClick={() => setCatalogSearch('')} className="underline hover:text-gray-700">
+              Limpiar búsqueda
             </button>
-
-            {isOwner && (
-              <>
-                <button
-                  onClick={() => handleDeleteCatalogItem(item.id)}
-                  className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm"
-                >
-                  Eliminar
-                </button>
-
-                {/* (Opcional) cambiar foto de un artículo existente */}
-                <label className="text-xs text-gray-700 cursor-pointer bg-gray-200 hover:bg-gray-300 py-2 px-3 rounded-lg">
-                  Cambiar foto
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) handleUpdateCatalogItemImage(item.id, f);
-                    }}
-                  />
-                </label>
-              </>
-            )}
-          </div>
+          )}
         </div>
-      </li>
-    ))}
-  </ul>
-)}
+      </div>
 
+      {/* Listado de carpetas (solo si no hay búsqueda) */}
+      {!catalogSearch.trim() && (
+        <div className="mb-6">
+          {childFolders.length > 0 ? (
+            <>
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">Carpetas</h4>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {childFolders.map(f => (
+                  <li key={f.id} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+                    <button onClick={() => setCurrentFolderId(f.id)} className="flex items-center gap-2 text-left">
+                      <span className="text-2xl">📁</span>
+                      <span className="font-medium text-gray-800">{f.name}</span>
+                    </button>
+                    {isOwner && (
+                      <button
+                        onClick={() => handleDeleteFolder(f.id)}
+                        className="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
+                      >
+                        Borrar
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="text-gray-600">No hay subcarpetas aquí.</p>
+          )}
+        </div>
+      )}
+
+      {/* Listado de artículos */}
+      <div>
+        <h4 className="text-sm font-semibold text-gray-700 mb-2">
+          Artículos {catalogSearch.trim() && '(resultados globales)'}
+        </h4>
+        {itemsToShow.length === 0 ? (
+          <p className="text-gray-600">
+            {catalogSearch.trim()
+              ? 'No se encontraron artículos que coincidan con la búsqueda.'
+              : 'No hay artículos en esta carpeta.'}
+          </p>
+        ) : (
+          <ul className="space-y-4">
+            {itemsToShow.map(item => (
+              <li key={item.id} className="p-4 border rounded-lg bg-gray-50">
+                <div className="flex items-start sm:items-center gap-4 justify-between">
+                  <div className="flex items-start gap-4">
+                    <img
+                      src={item.imageUrl || 'https://via.placeholder.com/96?text=Sin+foto'}
+                      alt={item.name}
+                      className="w-24 h-24 object-cover rounded border"
+                    />
+                    <div>
+                      <p className="font-semibold text-gray-800">{item.name}</p>
+                      <p className="text-sm text-gray-600">{item.pageCount} páginas</p>
+                      <div className="text-sm text-gray-700 mt-2 space-y-1">
+                        <p>
+                          <span className="font-semibold">Precio transferencia:</span>{' '}
+                          ${calculatePrice(item.pageCount, true, 'transferencia', item.pageCount).toFixed(2)}
+                        </p>
+                        <p>
+                          <span className="font-semibold">Precio efectivo:</span>{' '}
+                          ${calculatePrice(item.pageCount, true, 'efectivo', item.pageCount).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                    <button
+                      onClick={() => handleAddToCart(item)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm"
+                    >
+                      Añadir al Carrito
+                    </button>
+
+                    {isOwner && (
+                      <>
+                        <button
+                          onClick={() => handleDeleteCatalogItem(item.id)}
+                          className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm"
+                        >
+                          Eliminar
+                        </button>
+
+                        <label className="text-xs text-gray-700 cursor-pointer bg-gray-200 hover:bg-gray-300 py-2 px-3 rounded-lg">
+                          Cambiar foto
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) handleUpdateCatalogItemImage(item.id, f);
+                            }}
+                          />
+                        </label>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
+};
+
 
   const renderCart = () => {
     const total = cartItems.reduce((s, it) => s + it.price, 0);

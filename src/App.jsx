@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, deleteDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // PDF.js is used to count pages (loaded via script tag in index.html)
 /* global pdfjsLib */
@@ -35,6 +36,7 @@ const OWNER_UIDS = [
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 const App = () => {
   const [userId, setUserId] = useState(null);
@@ -54,6 +56,8 @@ const App = () => {
   const [catalogItems, setCatalogItems] = useState([]);
   const [newCatalogItemName, setNewCatalogItemName] = useState('');
   const [newCatalogItemPages, setNewCatalogItemPages] = useState('');
+  const [newCatalogItemImage, setNewCatalogItemImage] = useState(null);
+  const [newCatalogItemImagePreview, setNewCatalogItemImagePreview] = useState(null);
 
   // Cart
   const [cartItems, setCartItems] = useState([]);
@@ -330,6 +334,12 @@ useEffect(() => {
     }
   };
 
+const handleNewCatalogImageChange = (e) => {
+  const file = e.target.files?.[0] || null;
+  setNewCatalogItemImage(file);
+  setNewCatalogItemImagePreview(file ? URL.createObjectURL(file) : null);
+};
+
   const handleAddCatalogItem = async () => {
   if (!isOwner) {
     setMessage("Solo el dueño puede agregar artículos al catálogo.");
@@ -343,18 +353,33 @@ useEffect(() => {
     const colRef = collection(
       db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items'
     );
-    await addDoc(colRef, {
+
+    // 1) Creamos el doc con datos básicos y (opcional) un imageUrl vacío
+    const docRef = await addDoc(colRef, {
       name: newCatalogItemName,
       pageCount: parseInt(newCatalogItemPages, 10),
+      imageUrl: '' // lo completamos si hay foto
     });
+
+    // 2) Si el dueño seleccionó imagen, la subimos a Storage y guardamos el URL
+    if (newCatalogItemImage) {
+      const imageRef = ref(storage, `catalog/${docRef.id}/${newCatalogItemImage.name}`);
+      await uploadBytes(imageRef, newCatalogItemImage);
+      const url = await getDownloadURL(imageRef);
+      await setDoc(docRef, { imageUrl: url }, { merge: true });
+    }
+
     setNewCatalogItemName('');
     setNewCatalogItemPages('');
+    setNewCatalogItemImage(null);
+    setNewCatalogItemImagePreview(null);
     setMessage("Artículo del catálogo añadido exitosamente.");
   } catch (e) {
     console.error(e);
     setMessage(`Error al añadir artículo: ${e.message}`);
   }
 };
+
 
 
   const handleDeleteCatalogItem = async (id) => {
@@ -371,6 +396,21 @@ useEffect(() => {
   } catch (e) {
     console.error(e);
     setMessage(`Error al eliminar artículo: ${e.message}`);
+  }
+};
+
+  const handleUpdateCatalogItemImage = async (itemId, file) => {
+  if (!isOwner || !file) return;
+  try {
+    const imageRef = ref(storage, `catalog/${itemId}/${file.name}`);
+    await uploadBytes(imageRef, file);
+    const url = await getDownloadURL(imageRef);
+    const itemRef = doc(db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items', itemId);
+    await setDoc(itemRef, { imageUrl: url }, { merge: true });
+    setMessage('Foto actualizada.');
+  } catch (e) {
+    console.error(e);
+    setMessage(`Error al actualizar la foto: ${e.message}`);
   }
 };
 
@@ -453,6 +493,25 @@ useEffect(() => {
                    className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                    value={newCatalogItemPages} onChange={(e) => setNewCatalogItemPages(e.target.value)} min="1" />
           </div>
+          <div className="mb-4">
+  <label className="block text-gray-700 text-sm font-bold mb-2">
+    Foto (opcional):
+  </label>
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleNewCatalogImageChange}
+    className="block w-full text-sm text-gray-700"
+  />
+  {newCatalogItemImagePreview && (
+    <img
+      src={newCatalogItemImagePreview}
+      alt="Vista previa"
+      className="mt-2 w-24 h-24 object-cover rounded"
+    />
+  )}
+</div>
+
           <button onClick={handleAddCatalogItem}
                   className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full">
             Añadir Artículo al Catálogo
@@ -467,32 +526,68 @@ useEffect(() => {
         ) : (
           <ul className="space-y-4">
             {catalogItems.map(item => (
-              <li key={item.id} className="p-4 border rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between bg-gray-50">
-                <div className="mb-2 sm:mb-0">
-                  <p className="font-semibold text-gray-800">{item.name}</p>
-                  <p className="text-sm text-gray-600">{item.pageCount} páginas</p>
-                  <div className="text-sm text-gray-700 mt-2 space-y-1">
-  <p>
-    <span className="font-semibold">Precio transferencia:</span>{' '}
-    ${calculatePrice(item.pageCount, true, 'transferencia', item.pageCount).toFixed(2)}
-  </p>
-  <p>
-    <span className="font-semibold">Precio efectivo:</span>{' '}
-    ${calculatePrice(item.pageCount, true, 'efectivo', item.pageCount).toFixed(2)}
-  </p>
-</div>
-</div>
-                <div className="flex space-x-2">
-                  <button onClick={() => handleAddToCart(item)} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm">
-                    Añadir al Carrito
-                  </button>
-                  {isOwner && (
-                    <button onClick={() => handleDeleteCatalogItem(item.id)} className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm">
-                      Eliminar
-                    </button>
-                  )}
-                </div>
-              </li>
+              <li key={item.id} className="p-4 border rounded-lg bg-gray-50">
+  <div className="flex items-start sm:items-center gap-4 justify-between">
+    {/* Izquierda: imagen + datos */}
+    <div className="flex items-start gap-4">
+      <img
+        src={item.imageUrl || 'https://via.placeholder.com/96?text=Sin+foto'}
+        alt={item.name}
+        className="w-24 h-24 object-cover rounded border"
+      />
+      <div>
+        <p className="font-semibold text-gray-800">{item.name}</p>
+        <p className="text-sm text-gray-600">{item.pageCount} páginas</p>
+        <div className="text-sm text-gray-700 mt-2 space-y-1">
+          <p>
+            <span className="font-semibold">Precio transferencia:</span>{' '}
+            ${calculatePrice(item.pageCount, true, 'transferencia', item.pageCount).toFixed(2)}
+          </p>
+          <p>
+            <span className="font-semibold">Precio efectivo:</span>{' '}
+            ${calculatePrice(item.pageCount, true, 'efectivo', item.pageCount).toFixed(2)}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* Derecha: acciones */}
+    <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+      <button
+        onClick={() => handleAddToCart(item)}
+        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm"
+      >
+        Añadir al Carrito
+      </button>
+
+      {isOwner && (
+        <>
+          <button
+            onClick={() => handleDeleteCatalogItem(item.id)}
+            className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm"
+          >
+            Eliminar
+          </button>
+
+          {/* (Opcional) cambiar foto de un artículo existente */}
+          <label className="text-xs text-gray-700 cursor-pointer bg-gray-200 hover:bg-gray-300 py-2 px-3 rounded-lg">
+            Cambiar foto
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) handleUpdateCatalogItemImage(item.id, f);
+              }}
+            />
+          </label>
+        </>
+      )}
+    </div>
+  </div>
+</li>
+
             ))}
           </ul>
         )}

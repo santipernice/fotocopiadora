@@ -52,13 +52,9 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
   const icon = isCash ? '💵' : '🏦';
 
   return (
-    <div className={`relative border rounded-xl p-2 sm:p-3 bg-gradient-to-br ${wrap} shadow-sm`}>
-      {/* Badge SOLO para efectivo */}
-      {isCash && (
-        <span className="absolute -top-2 -right-2 text-[10px] px-2 py-[2px] rounded-full text-white bg-green-600 shadow ring-1 ring-white/70 z-10">
-          Mejor precio
-        </span>
-      )}
+    <div className={`relative border rounded-xl p-2 sm:p-3 ${!isCash ? 'pr-5 sm:pr-6' : ''} bg-gradient-to-br ${wrap} shadow-sm`}>
+
+      
 
       {/* Encabezado: icono + texto perfectamente alineados */}
       <div className="flex items-center justify-between">
@@ -847,7 +843,7 @@ const handleDeleteFolder = async (folderId) => {
         label="Transferencia"
         price={priceTransfer}
         variant="transfer"
-        
+
       />
     </div>
   );

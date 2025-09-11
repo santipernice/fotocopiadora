@@ -52,7 +52,7 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
   const icon = isCash ? '💵' : '🏦';
 
   return (
-    <div className={`relative border rounded-xl p-2 sm:p-3 ${!isCash ? 'pr-4 sm:pr-7' : ''} bg-gradient-to-br ${wrap} shadow-sm`}>
+    <div className={`relative w-full border rounded-xl p-2 sm:p-3 bg-gradient-to-br ${wrap} shadow-sm`}>
 
       
 
@@ -62,7 +62,7 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
           <span className="inline-flex items-center justify-center w-4 h-4 leading-none translate-y-[0.5px] select-none">
             {icon}
           </span>
-          <span className="text-[11px] font-semibold uppercase tracking-wide leading-none opacity-80">
+          <span className="text-[11px] font-semibold uppercase tracking-wide leading-none opacity-80 whitespace-nowrap">
             {label}
           </span>
         </div>

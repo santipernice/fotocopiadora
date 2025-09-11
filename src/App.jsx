@@ -52,7 +52,7 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
   const icon = isCash ? '💵' : '🏦';
 
   return (
-    <div className={`relative border rounded-xl p-2 sm:p-3 ${!isCash ? 'pr-5 sm:pr-6' : ''} bg-gradient-to-br ${wrap} shadow-sm`}>
+    <div className={`relative border rounded-xl p-2 sm:p-3 ${!isCash ? 'pr-4 sm:pr-7' : ''} bg-gradient-to-br ${wrap} shadow-sm`}>
 
       
 

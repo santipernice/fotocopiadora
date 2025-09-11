@@ -1098,8 +1098,9 @@ const handleDeleteFolder = async (folderId) => {
   <img
   src="/logoo.png"
   alt="Fotocopiadora Todo Color"
-  className="h-16 sm:h-20 md:h-24 w-auto object-contain select-none pointer-events-none"
+  className="w-48 sm:w-56 md:w-64 h-auto object-contain"
 />
+
 
   <span className="sr-only">Fotocopiadora Todo Color</span>
 </div>

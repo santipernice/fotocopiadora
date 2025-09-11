@@ -1096,7 +1096,7 @@ const handleDeleteFolder = async (folderId) => {
         <nav className="flex flex-col sm:flex-row justify-between items-center p-4 bg-blue-700 text-white shadow-md rounded-t-lg">
           <div className="flex items-center gap-2 mb-2 sm:mb-0">
   <img
-  src="logoo.png"
+  src={logo}
   alt="Fotocopiadora Todo Color"
   className="w-48 sm:w-56 md:w-64 h-auto object-contain"
 />

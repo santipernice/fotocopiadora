@@ -836,7 +836,7 @@ const handleDeleteFolder = async (folderId) => {
   const savings = Math.max(0, priceTransfer - priceCash);
 
   return (
-   <div className="mt-2 flex flex-col sm:flex-row gap-3 w-full">
+  <div className="mt-2 flex flex-col sm:flex-row gap-3 w-full">
   <div className="flex-1 min-w-0">
     <PricePill
       label="Efectivo"
@@ -850,9 +850,11 @@ const handleDeleteFolder = async (folderId) => {
       label="Transferencia"
       price={priceTransfer}
       variant="transfer"
+      /* sublabel eliminado */
     />
   </div>
 </div>
+
   );
 })()}
 
@@ -860,12 +862,14 @@ const handleDeleteFolder = async (folderId) => {
                   </div>
 
                   <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+
                     <button
-                      onClick={() => handleAddToCart(item)}
-                      className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm"
-                    >
-                      Añadir al Carrito
-                    </button>
+  onClick={() => handleAddToCart(item)}
+  className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm"
+>
+  Añadir al Carrito
+</button>
+
 
                     {isOwner && (
                       <>

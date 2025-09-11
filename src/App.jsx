@@ -52,7 +52,10 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
   const icon = isCash ? '💵' : '🏦';
 
   return (
-    <div className={`relative w-full border rounded-xl p-2 sm:p-3 bg-gradient-to-br ${wrap} shadow-sm`}>
+    <div
+  className={`relative w-full min-w-0 border rounded-xl p-3 ${!isCash ? 'pr-4 sm:pr-6' : ''} bg-gradient-to-br ${wrap} shadow-sm`}
+>
+
 
       
 
@@ -62,15 +65,16 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
           <span className="inline-flex items-center justify-center w-4 h-4 leading-none translate-y-[0.5px] select-none">
             {icon}
           </span>
-          <span className="text-[11px] font-semibold uppercase tracking-wide leading-none opacity-80 whitespace-nowrap">
-            {label}
-          </span>
+          <span className="text-[10px] sm:text-[11px] font-semibold uppercase leading-none opacity-80 whitespace-nowrap tracking-normal sm:tracking-wide">
+  {label}
+</span>
+
         </div>
       </div>
 
       {/* Precio: misma separación arriba para que alinee con la otra tarjeta */}
       <div className="mt-2">
-        <div className="text-xl sm:text-2xl font-extrabold leading-tight">
+        <div className="text-lg sm:text-2xl font-extrabold leading-tight">
           {formatARS(price)}
         </div>
         {sublabel && (
@@ -832,20 +836,23 @@ const handleDeleteFolder = async (folderId) => {
   const savings = Math.max(0, priceTransfer - priceCash);
 
   return (
-    <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
-      <PricePill
-        label="Efectivo"
-        price={priceCash}
-        variant="cash"
-        sublabel={savings > 0 ? `Ahorra ${formatARS(savings)} pagando en efectivo` : 'Incluye anillado si corresponde'}
-      />
-      <PricePill
-        label="Transferencia"
-        price={priceTransfer}
-        variant="transfer"
-
-      />
-    </div>
+   <div className="mt-2 flex flex-col sm:flex-row gap-3 w-full">
+  <div className="flex-1 min-w-0">
+    <PricePill
+      label="Efectivo"
+      price={priceCash}
+      variant="cash"
+      sublabel={savings > 0 ? `Ahorra ${formatARS(savings)} pagando en efectivo` : 'Incluye anillado si corresponde'}
+    />
+  </div>
+  <div className="flex-1 min-w-0">
+    <PricePill
+      label="Transferencia"
+      price={priceTransfer}
+      variant="transfer"
+    />
+  </div>
+</div>
   );
 })()}
 

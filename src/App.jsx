@@ -847,7 +847,7 @@ const handleDeleteFolder = async (folderId) => {
         label="Transferencia"
         price={priceTransfer}
         variant="transfer"
-        sublabel="Puede incluir recargo según configuración"
+        
       />
     </div>
   );

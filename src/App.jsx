@@ -3,6 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import logo from './assets/logoo.png'; // ajustá el nombre/ruta si usaste otro
 
 // PDF.js is used to count pages (loaded via script tag in index.html)
 /* global pdfjsLib */
@@ -1093,7 +1094,14 @@ const handleDeleteFolder = async (folderId) => {
     <div className="min-h-screen bg-gray-100 font-sans flex flex-col items-center py-4 sm:py-8 px-2 sm:px-4">
       <div className="w-full max-w-lg sm:max-w-4xl bg-white rounded-lg shadow-xl overflow-hidden mb-8">
         <nav className="flex flex-col sm:flex-row justify-between items-center p-4 bg-blue-700 text-white shadow-md rounded-t-lg">
-          <h1 className="text-xl sm:text-3xl font-extrabold mb-2 sm:mb-0">Fotocopiadora Online</h1>
+          <div className="flex items-center gap-2 mb-2 sm:mb-0">
+  <img
+    src={logo}
+    alt="Fotocopiadora Todo Color"
+    className="h-10 sm:h-12 w-auto object-contain select-none pointer-events-none"
+  />
+  <span className="sr-only">Fotocopiadora Todo Color</span>
+</div>
           <div className="flex flex-wrap justify-center space-x-2 sm:space-x-4 mt-2 sm:mt-0">
             <button onClick={() => setCurrentPage('calculator')}
               className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors duration-200 ${currentPage === 'calculator' ? 'bg-blue-800' : 'hover:bg-blue-600'}`}>

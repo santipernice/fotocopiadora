@@ -6,7 +6,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import logo from './assets/logoo.png'; // ajustá el nombre/ruta si usaste otro
 
 // PDF.js is used to count pages (loaded via script tag in index.html)
-/* global pdfjsLib */
+/* global pdfjsLib */ 
 /* prueba */
 const firebaseConfig = {
     apiKey: "AIzaSyDniek73av9oHTVIdFXqZrxOa-ONiGh0lo",

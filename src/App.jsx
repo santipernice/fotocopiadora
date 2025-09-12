@@ -884,7 +884,8 @@ const handleDeleteFolder = async (folderId) => {
 
                     <button
   onClick={() => handleAddToCart(item)}
-  className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg text-sm"
+  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold"
+  style={{ fontFamily: 'Inter, sans-serif' }}
 >
   Añadir al Carrito
 </button>
@@ -1024,7 +1025,8 @@ const handleDeleteFolder = async (folderId) => {
         </div>
 
         <button onClick={handleFinalizePurchase}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full"
+                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                style={{ fontFamily: 'Inter, sans-serif' }}
                 disabled={!cartItems.length || !isValidPhone(customerPhone)}>
           Finalizar Compra y Enviar por WhatsApp
         </button>

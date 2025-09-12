@@ -630,7 +630,7 @@ const handleDeleteFolder = async (folderId) => {
 
 
     <button onClick={handleAddCalculatorToCart}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg focus:outline-none focus:shadow-outline w-full"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg focus:outline-none focus:shadow-outline w-full transition transform duration-100 active:translate-y-[2px] active:scale-[0.98] shadow-md active:shadow-sm"
             style={{ fontFamily: 'Inter, sans-serif' }}
 >
       Añadir al Carrito
@@ -886,7 +886,7 @@ const handleDeleteFolder = async (folderId) => {
 
                     <button
   onClick={() => handleAddToCart(item)}
-  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold"
+  className="w-full sm:w-auto px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold transition transform duration-100 active:translate-y-[2px] active:scale-[0.98] shadow-md active:shadow-sm"
   style={{ fontFamily: 'Inter, sans-serif' }}
 >
   Añadir al Carrito
@@ -1027,7 +1027,7 @@ const handleDeleteFolder = async (folderId) => {
         </div>
 
         <button onClick={handleFinalizePurchase}
-                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold"
+                className="w-full sm:w-auto px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition transform duration-100 active:translate-y-[2px] active:scale-[0.98] shadow-md active:shadow-sm"
                 style={{ fontFamily: 'Inter, sans-serif' }}
                 disabled={!cartItems.length || !isValidPhone(customerPhone)}>
           Finalizar Compra y Enviar por WhatsApp

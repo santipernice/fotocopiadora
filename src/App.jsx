@@ -507,7 +507,7 @@ const handleDeleteFolder = async (folderId) => {
   }
   try {
     const colRef = collection(
-      db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items'
+      db,'tenants',TENANT_ID,'catalog_items'
     );
 
     // 1) Creamos el doc con datos básicos y (opcional) un imageUrl vacío
@@ -546,7 +546,7 @@ const handleDeleteFolder = async (folderId) => {
   }
   try {
     const ref = doc(
-      db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items', id
+      db,'tenants',TENANT_ID,'catalog_items', id
     );
     await deleteDoc(ref);
     setMessage("Artículo del catálogo eliminado exitosamente.");
@@ -562,7 +562,7 @@ const handleDeleteFolder = async (folderId) => {
     const imageRef = ref(storage, `catalog/${itemId}/${file.name}`);
     await uploadBytes(imageRef, file);
     const url = await getDownloadURL(imageRef);
-    const itemRef = doc(db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_items', itemId);
+    const itemRef = doc(db,'tenants',TENANT_ID,'catalog_items', itemId);
     await setDoc(itemRef, { imageUrl: url }, { merge: true });
     setMessage('Foto actualizada.');
   } catch (e) {

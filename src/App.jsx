@@ -574,7 +574,13 @@ const handleDeleteFolder = async (folderId) => {
 
   const renderCalculator = () => (
   <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
-    <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Calculadora de Copias</h2>
+    <h2
+  className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800"
+  style={{ fontFamily: 'Inter, sans-serif' }}
+>
+  Calculadora de Copias
+</h2>
+
 
     <div className="mb-4">
       <label htmlFor="numPages" className="block text-gray-700 text-sm font-bold mb-2">Cantidad de Páginas:</label>
@@ -640,7 +646,13 @@ const handleDeleteFolder = async (folderId) => {
 
   return (
     <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
-      <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Catálogo de Artículos</h2>
+      <h2
+  className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800"
+  style={{ fontFamily: 'Inter, sans-serif' }}
+>
+  Catálogo de Artículos
+</h2>
+
 
       {/* Breadcrumb */}
       <nav className="text-sm text-gray-600 mb-4 flex flex-wrap items-center gap-1">
@@ -914,7 +926,13 @@ const handleDeleteFolder = async (folderId) => {
     const total = cartItems.reduce((s, it) => s + it.price, 0);
     return (
       <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
-        <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Tu Carrito</h2>
+        <h2
+  className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800"
+  style={{ fontFamily: 'Inter, sans-serif' }}
+>
+  Tu Carrito
+</h2>
+
         <div className="mb-6">
   <label className="block text-gray-700 text-sm font-bold mb-2">Elegí el método de pago:</label>
   <div className="flex space-x-4">
@@ -1108,18 +1126,30 @@ const handleDeleteFolder = async (folderId) => {
   <span className="sr-only">Fotocopiadora Todo Color</span>
 </div>
           <div className="flex flex-wrap justify-center space-x-2 sm:space-x-4 mt-2 sm:mt-0">
-            <button onClick={() => setCurrentPage('calculator')}
-              className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors duration-200 ${currentPage === 'calculator' ? 'bg-blue-800' : 'hover:bg-blue-600'}`}>
-              Calculadora
-            </button>
-            <button onClick={() => setCurrentPage('catalog')}
-              className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors duration-200 ${currentPage === 'catalog' ? 'bg-blue-800' : 'hover:bg-blue-600'}`}>
-              Catálogo
-            </button>
-            <button onClick={() => setCurrentPage('cart')}
-              className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors duration-200 ${currentPage === 'cart' ? 'bg-blue-800' : 'hover:bg-blue-600'}`}>
-              Carrito ({cartItems.length})
-            </button>
+            <button
+  onClick={() => setCurrentPage('calculator')}
+  className={`px-3 sm:px-4 py-2 rounded-lg ${currentPage === 'calculator' ? 'bg-blue-800' : 'hover:bg-blue-600'} text-white`}
+  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}
+>
+  Calculadora
+</button>
+
+<button
+  onClick={() => setCurrentPage('catalog')}
+  className={`px-3 sm:px-4 py-2 rounded-lg ${currentPage === 'catalog' ? 'bg-blue-800' : 'hover:bg-blue-600'} text-white`}
+  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}
+>
+  Catálogo
+</button>
+
+<button
+  onClick={() => setCurrentPage('cart')}
+  className={`px-3 sm:px-4 py-2 rounded-lg ${currentPage === 'cart' ? 'bg-blue-800' : 'hover:bg-blue-600'} text-white`}
+  style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700 }}
+>
+  Carrito ({cartItems.length})
+</button>
+
             {isOwner && (
               <button onClick={() => setCurrentPage('owner-settings')}
                 className={`px-3 sm:px-4 py-2 rounded-lg font-medium text-sm sm:text-base transition-colors duration-200 ${currentPage === 'owner-settings' ? 'bg-blue-800' : 'hover:bg-blue-600'}`}>

@@ -483,7 +483,7 @@ const handleDeleteFolder = async (folderId) => {
   if (hasSubfolders || hasItems) { setMessage("No podés borrar una carpeta que contiene subcarpetas o artículos."); return; }
 
   try {
-    const ref_ = doc(db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_folders', folderId);
+    const ref_ = doc(db, 'tenants', TENANT_ID, 'catalog_folders', folderId);
     await deleteDoc(ref_);
     if (currentFolderId === folderId) {
       const parent = folders.find(f => f.id === folderId)?.parentId ?? null;

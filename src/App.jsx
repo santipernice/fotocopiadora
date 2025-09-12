@@ -21,6 +21,9 @@ const firebaseConfig = {
 // Fixed appId for Firestore pathing
 const appId = 'fotocopiadora-prod';
 
+// ID estable para tus datos (no depende del UID ni del proyecto)
+const TENANT_ID = 'fotocopiadora-prod'; // podés usar el mismo valor que appId
+
 // Replace after first login with your UID to unlock owner mode
 // UID principal del dueño (donde vive el catálogo)
 const OWNER_USER_ID = 'ElbeeLq5ywckXzeYpeE9zsJ07Im2';
@@ -200,7 +203,7 @@ useEffect(() => {
   if (!isAuthReady) return;
 
   const settingsDocRef = doc(
-    db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_settings', 'general'
+    db, 'tenants', TENANT_ID, 'settings', 'general'
   );
 
   const unsub = onSnapshot(
@@ -231,7 +234,7 @@ useEffect(() => {
   // Fetch catalog (todos leen el catálogo del dueño)
 useEffect(() => {
   if (!isAuthReady) return;
-  const colRef = collection(db,'artifacts',appId,'users',OWNER_USER_ID,'user_catalog_items');
+  const colRef = collection(db,'tenants',TENANT_ID,'catalog_items');
   const unsub = onSnapshot(colRef, (snap) => {
     const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     setCatalogItems(items);
@@ -242,7 +245,7 @@ useEffect(() => {
 // Fetch folders (todos leen las carpetas del dueño)
 useEffect(() => {
   if (!isAuthReady) return;
-  const colRef = collection(db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_folders');
+  const colRef = collection(db,'tenants',TENANT_ID,'catalog_folders');
   const unsub = onSnapshot(colRef, (snap) => {
     const fs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     setFolders(fs);
@@ -432,7 +435,7 @@ useEffect(() => {
   }
   try {
     const ref = doc(
-      db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_settings', 'general'
+      db, 'tenants', TENANT_ID, 'settings', 'general'
     );
     await setDoc(ref, {
       pricePerPageUnder100: parseFloat(settings.pricePerPageUnder100),
@@ -463,7 +466,7 @@ const handleAddFolder = async () => {
   const name = newFolderName.trim();
   if (!name) { setMessage("Poné un nombre para la carpeta."); return; }
   try {
-    const colRef = collection(db, 'artifacts', appId, 'users', OWNER_USER_ID, 'user_catalog_folders');
+    const colRef = collection(db,'tenants',TENANT_ID,'catalog_folders');
     await addDoc(colRef, { name, parentId: currentFolderId ?? null });
     setNewFolderName('');
     setMessage("Carpeta creada.");

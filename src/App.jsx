@@ -70,7 +70,7 @@ const PricePill = ({ label, price, variant = 'cash', sublabel }) => {
             {icon}
           </span>
           <span
-  className="text-[10px] sm:text-[11px] font-light uppercase leading-none opacity-80 whitespace-nowrap tracking-normal sm:tracking-wide"
+  className="text-[10px] sm:text-[11px] font-medium uppercase leading-none opacity-80 whitespace-nowrap tracking-normal sm:tracking-wide"
   style={{ fontFamily: 'Inter, sans-serif' }}
 >
   {label}

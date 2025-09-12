@@ -4,6 +4,15 @@ import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import logo from './assets/logoo.png'; // ajustá el nombre/ruta si usaste otro
+import { useEffect } from "react";
+
+useEffect(() => {
+  // Fuerza a iOS a reconocer :active en elementos táctiles
+  const enableActive = () => {};
+  window.addEventListener("touchstart", enableActive, { passive: true });
+  return () => window.removeEventListener("touchstart", enableActive);
+}, []);
+
 
 // PDF.js is used to count pages (loaded via script tag in index.html)
 /* global pdfjsLib */ 
@@ -630,8 +639,10 @@ const handleDeleteFolder = async (folderId) => {
 
 
     <button onClick={handleAddCalculatorToCart}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg focus:outline-none focus:shadow-outline w-full transition transform duration-100 active:translate-y-[2px] active:scale-[0.98] shadow-md active:shadow-sm"
-            style={{ fontFamily: 'Inter, sans-serif' }}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg w-full
+             cursor-pointer transition-transform duration-100 transform-gpu
+             active:translate-y-[2px] active:scale-[0.98] shadow-md active:shadow-sm"
+  style={{ fontFamily: 'Inter, sans-serif', WebkitTapHighlightColor: 'transparent' }}
 >
       Añadir al Carrito
     </button>

@@ -630,7 +630,9 @@ const handleDeleteFolder = async (folderId) => {
 
 
     <button onClick={handleAddCalculatorToCart}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline w-full">
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg focus:outline-none focus:shadow-outline w-full"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+>
       Añadir al Carrito
     </button>
   </div>

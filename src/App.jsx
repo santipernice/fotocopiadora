@@ -835,8 +835,8 @@ const handleDeleteFolder = async (folderId) => {
           <ul className="space-y-4">
             {itemsToShow.map(item => (
               <li key={item.id} className="p-4 border rounded-lg bg-gray-50">
-                <div className="flex items-start sm:items-center gap-4 justify-between">
-                  <div className="flex items-start gap-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:justify-between">
+                  <div className="flex items-start gap-4 flex-1 min-w-0">
                     <img
                       src={item.imageUrl || 'https://via.placeholder.com/96?text=Sin+foto'}
                       alt={item.name}
@@ -877,7 +877,7 @@ const handleDeleteFolder = async (folderId) => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                  <div className="w-full sm:w-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:self-start">
 
                     <button
   onClick={() => handleAddToCart(item)}

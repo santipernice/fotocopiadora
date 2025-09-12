@@ -31,6 +31,7 @@ const OWNER_USER_ID = 'YnHXOMctHvejyWkXftXrkwS8wip1';
 // Lista de UIDs que pueden entrar en modo dueño
 const OWNER_UIDS = [
   OWNER_USER_ID, 'YnHXOMctHvejyWkXftXrkwS8wip1'
+  OWNER_USER_ID, 'ElbeeLq5ywckXzeYpeE9zsJ07Im2'
   // Si querés más dueños, agregalos acá como strings:
   // 'otroUID', 
 ];

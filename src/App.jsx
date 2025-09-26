@@ -6,14 +6,6 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import logo from './assets/logoo.png'; // ajustá el nombre/ruta si usaste otro
 
 
-useEffect(() => {
-  // Fuerza a iOS a reconocer :active en elementos táctiles
-  const enableActive = () => {};
-  window.addEventListener("touchstart", enableActive, { passive: true });
-  return () => window.removeEventListener("touchstart", enableActive);
-}, []);
-
-
 // PDF.js is used to count pages (loaded via script tag in index.html)
 /* global pdfjsLib */ 
 /* prueba */

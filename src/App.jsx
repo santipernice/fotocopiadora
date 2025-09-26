@@ -895,8 +895,10 @@ const handleDeleteFolder = async (folderId) => {
                   <div className="w-full sm:w-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:self-start">
 
                     <button
-  onClick={() => handleAddToCart(item)}
-  onClick={handleAddCalculatorToCart}
+  onClick={() => {
+    handleAddToCart(item);
+    handleAddCalculatorToCart();
+  }}
   className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg w-full
             cursor-pointer transition-transform duration-100 transform-gpu
             active:translate-y-[2px] active:scale-[0.98] shadow-md active:shadow-sm"

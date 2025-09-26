@@ -4,6 +4,7 @@ import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import logo from './assets/logoo.png'; // ajustá el nombre/ruta si usaste otro
+import { useEffect } from "react";
 
 useEffect(() => {
   // Fuerza a iOS a reconocer :active en elementos táctiles

@@ -172,14 +172,12 @@ const [cartPaymentMethod, setCartPaymentMethod] = useState('transferencia');
 
   // Settings
   const [settings, setSettings] = useState({
-    pricePerPageUnder100: 10,
-    pricePerPageOver100: 8,
-    bindingPriceUnder100: 100,
-    bindingPriceOver100: 150,
-    maxPagesPerBinding: 600,
-    cashDiscountPercentage: 10,
-    transferSurchargePercentage: 5,
-    deliveryTimeMessage: 'Los pedidos suelen demorar entre 24 y 48 horas hábiles.',
+  pricePerPageUnder100: 10,
+  pricePerPageOver100: 8,
+  bindingPriceUnder200: 100,
+  bindingPriceOver200: 150,
+  maxPagesPerBinding: 600,
+  deliveryTimeMessage: 'Los pedidos suelen demorar entre 24 y 48 horas hábiles.',
   });
 
   // Auth (dentro del componente)
@@ -265,7 +263,7 @@ useEffect(() => {
     let binding = 0;
     if (includeBindingOption) {
       const n = Math.ceil(pages / settings.maxPagesPerBinding);
-      binding = pages > 100 ? n * settings.bindingPriceOver100 : n * settings.bindingPriceUnder100;
+      binding = pages > 200 ? n * settings.bindingPriceOver200 : n * settings.bindingPriceUnder200;
     }
     let finalP = base + binding;
     if (paymentMethodOption === 'efectivo') finalP *= (1 - settings.cashDiscountPercentage / 100);
@@ -444,8 +442,8 @@ useEffect(() => {
     await setDoc(ref, {
       pricePerPageUnder100: parseFloat(settings.pricePerPageUnder100),
       pricePerPageOver100: parseFloat(settings.pricePerPageOver100),
-      bindingPriceUnder100: parseFloat(settings.bindingPriceUnder100),
-      bindingPriceOver100: parseFloat(settings.bindingPriceOver100),
+      bindingPriceUnder200: parseFloat(settings.bindingPriceUnder200),
+      bindingPriceOver200: parseFloat(settings.bindingPriceOver200),
       maxPagesPerBinding: parseInt(settings.maxPagesPerBinding, 10),
       cashDiscountPercentage: parseFloat(settings.cashDiscountPercentage),
       transferSurchargePercentage: parseFloat(settings.transferSurchargePercentage),
@@ -1070,14 +1068,14 @@ const handleDeleteFolder = async (folderId) => {
       <div className="mb-6">
         <h3 className="text-lg sm:text-xl font-semibold mb-3 text-gray-700">Precios de Anillado</h3>
         <div className="mb-4">
-          <label htmlFor="bindingUnder100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (hasta 100):</label>
+          <label htmlFor="bindingUnder100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (hasta 200):</label>
           <input type="number" id="bindingUnder100"
                  className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                  value={settings.bindingPriceUnder100} onChange={(e) => setSettings({ ...settings, bindingPriceUnder100: e.target.value })}
                  min="0" step="0.01" />
         </div>
         <div className="mb-4">
-          <label htmlFor="bindingOver100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (más de 100):</label>
+          <label htmlFor="bindingOver100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (más de 200):</label>
           <input type="number" id="bindingOver100"
                  className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                  value={settings.bindingPriceOver100} onChange={(e) => setSettings({ ...settings, bindingPriceOver100: e.target.value })}

@@ -1073,15 +1073,15 @@ const handleDeleteFolder = async (folderId) => {
       <div className="mb-6">
         <h3 className="text-lg sm:text-xl font-semibold mb-3 text-gray-700">Precios de Anillado</h3>
         <div className="mb-4">
-          <label htmlFor="bindingUnder100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (hasta 200):</label>
-          <input type="number" id="bindingUnder100"
+          <label htmlFor="bindingUnder200" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (hasta 200):</label>
+          <input type="number" id="bindingUnder200"
                  className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                  value={settings.bindingPriceUnder100} onChange={(e) => setSettings({ ...settings, bindingPriceUnder100: e.target.value })}
                  min="0" step="0.01" />
         </div>
         <div className="mb-4">
-          <label htmlFor="bindingOver100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (más de 200):</label>
-          <input type="number" id="bindingOver100"
+          <label htmlFor="bindingOver200" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (más de 200):</label>
+          <input type="number" id="bindingOver200"
                  className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                  value={settings.bindingPriceOver100} onChange={(e) => setSettings({ ...settings, bindingPriceOver100: e.target.value })}
                  min="0" step="0.01" />

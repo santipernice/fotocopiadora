@@ -177,6 +177,8 @@ const [cartPaymentMethod, setCartPaymentMethod] = useState('transferencia');
   bindingPriceUnder200: 100,
   bindingPriceOver200: 150,
   maxPagesPerBinding: 600,
+  cashDiscountPercentage: 0,
+  transferSurchargePercentage: 0,
   deliveryTimeMessage: 'Los pedidos suelen demorar entre 24 y 48 horas hábiles.',
   });
 

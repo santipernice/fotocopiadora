@@ -271,10 +271,7 @@ useEffect(() => {
     return parseFloat(finalP.toFixed(2));
   }, [settings]);
 
-  //calculo total paginas
-  const totalPages = cartItems.reduce((acc, item) => {
- return acc + (item.pageCount || 0);; // item.pages es la cantidad de páginas de cada producto
-}, 0);
+const totalPages = cartItems.reduce((acc, item) => acc + (item.pageCount || 0), 0);
 
   // Recalculate cart when items/settings/payment method change
 useEffect(() => {

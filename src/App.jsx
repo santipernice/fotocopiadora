@@ -1080,8 +1080,8 @@ const handleDeleteFolder = async (folderId) => {
                  min="0" step="0.01" />
         </div>
         <div className="mb-4">
-          <label htmlFor="bindingOver200" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (más de 200):</label>
-          <input type="number" id="bindingOver200"
+          <label htmlFor="bindingOver100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (más de 200):</label>
+          <input type="number" id="bindingOver100"
                  className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                  value={settings.bindingPriceOver100} onChange={(e) => setSettings({ ...settings, bindingPriceOver100: e.target.value })}
                  min="0" step="0.01" />

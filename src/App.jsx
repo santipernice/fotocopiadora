@@ -397,6 +397,7 @@ useEffect(() => {
 
     const ownerPhoneNumber = '542215246895'; // Cambiar por el real
     let total = 0;
+    let totalPages = 0;
     let msg = `¡Hola! Me gustaría finalizar mi compra de la fotocopiadora.\n`;
     msg += `Nombre del Cliente: ${customerName.trim()}\n\n`;
     msg += `WhatsApp del Cliente: ${customerPhone}\n\n`;
@@ -404,6 +405,7 @@ useEffect(() => {
     msg += `Detalle del pedido:\n`;
     cartItems.forEach((it) => {
       total += it.price;
+      totalPages += it.pageCount;
       if (it.type === 'catalog') {
         msg += `- ${it.name} (${it.pageCount} páginas): $${it.price.toFixed(2)}\n`;
       } else {

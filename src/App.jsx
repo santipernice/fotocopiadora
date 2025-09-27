@@ -272,8 +272,8 @@ useEffect(() => {
   }, [settings]);
 
   //calculo total paginas
-  const totalPages = cart.reduce((acc, item) => {
-  return acc + (item.pages || 0); // item.pages es la cantidad de páginas de cada producto
+  const totalPages = cartItems.reduce((acc, item) => {
+ return acc + (item.pageCount || 0);; // item.pages es la cantidad de páginas de cada producto
 }, 0);
 
   // Recalculate cart when items/settings/payment method change
@@ -891,10 +891,7 @@ const handleDeleteFolder = async (folderId) => {
                   <div className="w-full sm:w-auto flex flex-col gap-2 sm:flex-row sm:items-center sm:self-start">
 
                     <button
-  onClick={() => {
-    handleAddToCart(item);
-    handleAddCalculatorToCart();
-  }}
+  onClick={() => handleAddToCart(item)}
   className="bg-blue-500 hover:bg-blue-700 text-white font-bold px-4 py-3 rounded-lg w-full
             cursor-pointer transition-transform duration-100 transform-gpu
             active:translate-y-[2px] active:scale-[0.98] shadow-md active:shadow-sm"
@@ -1047,12 +1044,12 @@ const handleDeleteFolder = async (folderId) => {
     );
   };
 
-  const renderOwnerSettings = () => (
+  s = () => (
     <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
       <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Configuración del Dueño</h2>
       <p className="text-gray-600 mb-4">Ajustá precios y condiciones de tu fotocopiadora.</p>
 
-      <div className="mb-6">
+      <div className="mb-6">const renderOwnerSetting
         <h3 className="text-lg sm:text-xl font-semibold mb-3 text-gray-700">Precios de Impresión por Página</h3>
         <div className="mb-4">
           <label htmlFor="priceUnder100" className="block text-gray-700 text-sm font-bold mb-2">Precio por página (hasta 100):</label>
@@ -1076,14 +1073,14 @@ const handleDeleteFolder = async (folderId) => {
           <label htmlFor="bindingUnder100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (hasta 200):</label>
           <input type="number" id="bindingUnder100"
                  className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                 value={settings.bindingPriceUnder100} onChange={(e) => setSettings({ ...settings, bindingPriceUnder100: e.target.value })}
+                 value={settings.bindingPriceUnder200} onChange={(e) => setSettings({ ...settings, bindingPriceUnder200: e.target.value })}
                  min="0" step="0.01" />
         </div>
         <div className="mb-4">
           <label htmlFor="bindingOver100" className="block text-gray-700 text-sm font-bold mb-2">Costo de anillado (más de 200):</label>
           <input type="number" id="bindingOver100"
                  className="shadow appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                 value={settings.bindingPriceOver100} onChange={(e) => setSettings({ ...settings, bindingPriceOver100: e.target.value })}
+                 value={settings.bindingPriceOver200} onChange={(e) => setSettings({ ...settings, bindingPriceOver200: e.target.value })}
                  min="0" step="0.01" />
         </div>
         <div className="mb-4">

@@ -407,7 +407,7 @@ useEffect(() => {
       if (it.type === 'catalog') {
         msg += `- ${it.name} (${it.pageCount} páginas): $${it.price.toFixed(2)}\n`;
       } else {
-        msg += `Impresiones (${it.pageCount} páginas${it.binding ? ', anillado' : ''}, pago en ${it.paymentMethod}): $${it.price.toFixed(2)}\n`;
+        msg += `Impresiones (${it.pageCount} páginas${it.binding ? ', anillado' : ''}): $${it.price.toFixed(2)}\n`;
         if (it.file && it.file !== 'No file') {
           msg += `  (Archivo: ${it.file}. Por favor, envía este archivo aparte.)\n`;
         }

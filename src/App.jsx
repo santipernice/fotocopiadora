@@ -271,6 +271,11 @@ useEffect(() => {
     return parseFloat(finalP.toFixed(2));
   }, [settings]);
 
+  //calculo total paginas
+  const totalPages = cart.reduce((acc, item) => {
+  return acc + (item.pages || 0); // item.pages es la cantidad de páginas de cada producto
+}, 0);
+
   // Recalculate cart when items/settings/payment method change
 useEffect(() => {
   if (cartItems.length === 0) return;
@@ -414,7 +419,7 @@ useEffect(() => {
       }
     });
     const down = total * 0.20, rest = total * 0.80;
-    msg += `\nSubtotal: $${total.toFixed(2)}\n`;
+    msg += `\nSubtotal: $${total.toFixed(2)} (Total páginas: ${totalPages})\n`;
     msg += `------------------------------------\n`;
     msg += `Total de la compra: $${total.toFixed(2)}\n`;
     msg += `\n**Seña a abonar (20% por transferencia): $${down.toFixed(2)}**\n`;

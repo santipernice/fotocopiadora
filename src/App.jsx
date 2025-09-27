@@ -271,8 +271,6 @@ useEffect(() => {
     return parseFloat(finalP.toFixed(2));
   }, [settings]);
 
-const totalPages = cartItems.reduce((acc, item) => acc + (item.pageCount || 0), 0);
-
   // Recalculate cart when items/settings/payment method change
 useEffect(() => {
   if (cartItems.length === 0) return;

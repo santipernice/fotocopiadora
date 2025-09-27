@@ -1039,7 +1039,7 @@ const handleDeleteFolder = async (folderId) => {
     );
   };
 
-  s = () => (
+  const renderOwnerSettings = () => (
     <div className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-lg mx-auto">
       <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-gray-800">Configuración del Dueño</h2>
       <p className="text-gray-600 mb-4">Ajustá precios y condiciones de tu fotocopiadora.</p>

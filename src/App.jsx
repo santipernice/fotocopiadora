@@ -844,7 +844,9 @@ const handleDeleteFolder = async (folderId) => {
           </p>
         ) : (
           <ul className="space-y-4">
-            {itemsToShow.map(item => (
+            {[...itemsToShow]
+  .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }))
+  .map(item => (
               <li key={item.id} className="p-4 border rounded-lg bg-gray-50">
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 sm:justify-between">
                   <div className="flex items-start gap-4 flex-1 min-w-0">

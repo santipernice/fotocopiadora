@@ -644,7 +644,10 @@ const handleDeleteFolder = async (folderId) => {
 
   const renderCatalog = () => {
   // Carpetas hijas de la carpeta actual
-  const childFolders = folders.filter(f => (f.parentId ?? null) === (currentFolderId ?? null));
+  const childFolders = folders
+  .filter(f => (f.parentId ?? null) === (currentFolderId ?? null))
+  .sort((a, b) => a.name.localeCompare(b.name, 'es', { numeric: true }));
+
 
   // Ítems en la carpeta actual (si NO hay búsqueda)
   const itemsInCurrentFolder = catalogItems.filter(it => ((it.folderId ?? null) === (currentFolderId ?? null)));

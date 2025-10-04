@@ -27,11 +27,11 @@ const TENANT_ID = 'fotocopiadora-prod'; // podés usar el mismo valor que appId
 
 // Replace after first login with your UID to unlock owner mode
 // UID principal del dueño (donde vive el catálogo)
-const OWNER_USER_ID = '22XE0xjQCxda3e1ZnSKKBkQ9ho22';
+const OWNER_USER_ID = 'kWhDudjX8eQEs0OvWQTdFRaXPd92';
 
 // Lista de UIDs que pueden entrar en modo dueño
 const OWNER_UIDS = [
-  OWNER_USER_ID, '22XE0xjQCxda3e1ZnSKKBkQ9ho22'
+  OWNER_USER_ID, 'kWhDudjX8eQEs0OvWQTdFRaXPd92'
   // Si querés más dueños, agregalos acá como strings:
   // 'otroUID', 
 ];

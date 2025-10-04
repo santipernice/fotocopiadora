@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, deleteDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import logo from './assets/logoo.png'; // ajustá el nombre/ruta si usaste otro
+import logo from './assets/logo2.png'; // ajustá el nombre/ruta si usaste otro
 
 
 // PDF.js is used to count pages (loaded via script tag in index.html)
@@ -27,11 +27,11 @@ const TENANT_ID = 'fotocopiadora-prod'; // podés usar el mismo valor que appId
 
 // Replace after first login with your UID to unlock owner mode
 // UID principal del dueño (donde vive el catálogo)
-const OWNER_USER_ID = 'kWhDudjX8eQEs0OvWQTdFRaXPd92';
+const OWNER_USER_ID = 'gH33JYQm0RPi2qCDTQrRRDVpaCH3';
 
 // Lista de UIDs que pueden entrar en modo dueño
 const OWNER_UIDS = [
-  OWNER_USER_ID, 'kWhDudjX8eQEs0OvWQTdFRaXPd92'
+  OWNER_USER_ID, 'gH33JYQm0RPi2qCDTQrRRDVpaCH3'
   // Si querés más dueños, agregalos acá como strings:
   // 'otroUID', 
 ];
